@@ -32,13 +32,34 @@
     <!-- Template Stylesheet -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
+    <!-- Style for Graph Help Button -->
+    <style>
+        .button-graph {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .help-text {
+            opacity: 0;
+            max-width: 0;
+            overflow: hidden;
+            transition: opacity 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .button-graph:hover .help-text {
+            opacity: 1;
+            max-width: 100%;
+        }
+    </style>
+
     <style>
         html, body {
             overflow: hidden !important;
             height: 100% !important;
         }
     </style>
-
 </head>
 
 <body>
@@ -53,7 +74,7 @@
 
 
         <!-- Navbar & Hero Start -->
-        <div class="container-xxl position-relative p-0">
+        <div class="container-xxl position-relative p-0" id="navbarHidden">
             <nav class="navbar navbar-expand-lg navbar-light px-4 px-lg-5 py-3 py-lg-0">
                 <a href="/" class="navbar-brand p-0">
                     <h1 class="m-0"><img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo"></i>Lupa<span class="fs-5">Digital</span></h1>
@@ -84,54 +105,67 @@
                 </div>
             </nav>
             <!-- Navbar End -->
+        </div>
+        <!-- Hero End -->
 
-            <!-- Start Grafo -->
-            <div class="container-xxl bg-primary hero-header-graph" style="padding-top:3rem;">
-                <div class="px-lg-5" style="padding-top:3rem;">
-                    <div class="row" style="--bs-gutter-x: -1.5rem;">
-                        <!-- button in top right corner of iframe ??? -->
-                         <button type="button" class="btn btn-primary wow zoomIn" data-wow-delay="0.1s" data-bs-toggle="modal" data-bs-target="#tutorialModal" style="position: absolute; top: 10px; right: 10px; z-index: 1000;">
-                            Como ler este grafo?
-                        </button>
-                        <iframe class="wow zoomIn" data-wow-delay="0.1s" id="myGraph" srcdoc="{{ globalVar['graph_html'] }}" style="border:10px solid rgba(21, 49, 127, 0.8);">
+        <!-- Start Grafo -->
+        <div class="container-xxl bg-primary hero-header-graph">
+            <div class="px-lg-5">
+                <div class="row justify-content-center" style="--bs-gutter-x: -1.5rem;">
+                    <div style="position: relative; width: 100%; margin: 0; padding: 0;" class="wow zoomIn" data-wow-delay="0.1s">
+                        <iframe id="myGraph" 
+                                srcdoc="{{ globalVar['graph_html'] }}" 
+                                style="display: block; border:10px solid rgba(21, 49, 127, 0.8); width: 100%;">
                             Este browser não suporta iframes. Por favor, atualize o seu navegador ou utilize um diferente.
                         </iframe>
+                        <div style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); z-index: 1000;">
+                            <button type="button" 
+                                    class="btn button-graph"
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#tutorialModal"
+                                    style="padding: 0; font-size: 1em; outline: none; box-shadow: none;">
+                                <i class="fa fa-question-circle"></i>
+                                <span class="help-text">Detalhes do Grafo</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
             <script>
                 function adjustIframeSize() {
-                    // Get viewport height and width
                     let screenWidth = window.innerWidth;
                     let screenHeight = window.innerHeight;
-            
-                    // Get element heights (ensure they exist before accessing offsetHeight)
-                    let navbar = document.getElementById("navbarCollapse");
+
+                    let navbar1 = document.getElementById("navbarCollapse");
+                    let navbar2 = document.getElementById("navbarHidden");
                     let footer = document.getElementById("footer-banner");
-                    
-                    let navbarHeight = navbar ? navbar.offsetHeight : 0;
+
+                    let navbarHeight1 = navbar1 ? navbar1.offsetHeight : 0;
+                    let navbarHeight2 = navbar2 ? navbar2.offsetHeight : 0;
+                    let navbarHeight = Math.max(navbarHeight1, navbarHeight2);
                     let footerHeight = footer ? footer.offsetHeight : 0;
-            
-                    // Calculate the available height for the iframe
+
                     let availableHeight = screenHeight - navbarHeight - footerHeight;
-            
-                    // Adjust iframe size
+
                     let iframe = document.getElementById("myGraph");
                     if (iframe) {
-                        iframe.style.width = screenWidth + "px";
                         iframe.style.height = availableHeight + "px";
+
+                        if (navbarHeight1 > navbarHeight2) {
+                            iframe.style.marginTop = "6em";
+                        } else {
+                            iframe.style.marginTop = "0";
+                        }
                     }
-            
-                    console.log(`Navbar: ${navbarHeight}px, Footer: ${footerHeight}px, Available height: ${availableHeight}px`);
                 }
-            
-                // Run on load and window resize
+
                 window.addEventListener("load", adjustIframeSize);
                 window.addEventListener("resize", adjustIframeSize);
             </script>
-            <!-- End Grafo -->               
         </div>
-        <!-- Hero End -->
+        <!-- End Grafo -->
+        
+        
 
         <!-- Start Help Grafo -->  
         <div class="modal fade" id="tutorialModal" tabindex="-1" aria-labelledby="tutorialModalLabel" aria-hidden="true">
