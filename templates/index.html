@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="utf-8">
+    <title>Lupa Digital</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- Favicon -->
+    <link href="{{ url_for('static', filename='img/favicon.ico') }}" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"> 
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='lib/animate/animate.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='lib/lightbox/css/lightbox.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='lib/owlcarousel/assets/owl.carousel.min.css') }}">
+
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+
+    <!-- Template Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Remove Features Arrow (navigation) and Number of Images -->
+    <style>
+        .lb-prev,
+        .lb-next,
+        .lb-number {
+        display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-xxl bg-white p-0">
+        <!-- Spinner Start -->
+        <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+            <div class="spinner-grow text-primary" style="width: 3rem; height: 3rem;" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+        <!-- Spinner End -->
+        <!-- Loading Search Start -->
+        <div id="loadingIndicator" style="display: none;" class="text-center pt-3">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">A analisar {{ globalVar['total_amount_of_news'] }} notícias...</p>
+        </div>
+         <!-- Loading Search End -->
+
+
+        <!-- Navbar & Hero Start -->
+        <div class="container-xxl position-relative p-0">
+            <nav class="navbar navbar-expand-lg navbar-light px-4 px-lg-5 py-3 py-lg-0">
+                <a href="/" class="navbar-brand p-0">
+                    <h1 class="m-0"><img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo"></i>Lupa<span class="fs-5">Digital</span></h1>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                    <span class="fa fa-bars"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <div class="navbar-nav ms-auto py-0">
+                        <a href="/" class="nav-item nav-link active">Início</a>
+                        {% if not globalVar['search_done'] %}
+                            <a href="#" class="nav-item nav-link" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Começa com uma pesquisa!" data-bs-placement="bottom">Sobre</a>
+                            <a href="#" class="nav-item nav-link" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Começa com uma pesquisa!" data-bs-placement="bottom">Grafo</a>
+                        {% elif globalVar['zero_results'] %}
+                            <a href="/sobre" class="nav-item nav-link">Sobre</a>
+                            <a href="#" class="nav-item nav-link" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Nada por aqui..." data-bs-placement="bottom">Grafo</a>
+                        {% else %}
+                            <a href="/sobre" class="nav-item nav-link">Sobre</a>
+                            <a href="/grafo" class="nav-item nav-link">Grafo</a>
+                        {% endif %}
+                    </div>
+                    <button type="button" class="btn text-secondary ms-3" onclick="window.location.href='/'">
+                        <i class="fa fa-search"></i>
+                    </button>
+                    {% if globalVar['query'] %}
+                    <a href="javascript:void(0);" style="pointer-events: none; cursor: default; box-shadow: inset 0 0 0 2px rgb(82, 118, 237); color: rgb(82, 118, 237);" class="nav-item nav-link btn rounded-pill py-2 px-4 ms-3">{{ globalVar['query'] }}</a>
+                    {% endif %}
+                </div>
+            </nav>
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                  var tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+                  tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+                    new bootstrap.Tooltip(tooltipTriggerEl);
+                  });
+                });
+            </script>
+
+            <div class="container-xxl py-5 bg-primary hero-header mb-5">
+                <div class="container my-5 py-5 px-lg-5">
+                    <div class="row g-5 py-5">
+                        <div class="col-lg-6 text-center text-lg-start">
+                            <h1 class="text-white mb-4 animated zoomIn">A Lupa que Revela Conexões</h1>
+                            <p class="text-white pb-3 animated zoomIn" style="text-align: justify;">A Lupa Digital permite-te explorar e analisar notícias arquivadas ao longo da era digital, revelando conexões e padrões entre tópicos, entidades e eventos.</p>
+                            <div class="position-relative w-100 mt-3 animated zoomIn">
+                                <input id="searchInput" class="form-control border-0 rounded-pill w-100 ps-4 pe-5" type="text" placeholder="Procura sobre um tópico..." style="height: 48px;">
+                                <button id="searchInput-buttom" onclick="redirectToSearch()" type="submit" class="btn shadow-none position-absolute top-0 end-0 mt-1 me-2"><i class="fa fa-search text-primary fs-4"></i></button>
+                            </div>
+                            <p class="text-white pb-3 animated zoomIn mt-3 pt-3">
+                                Baseado em dados do
+                                <a href="https://arquivo.pt" target="_blank">
+                                <img src="{{ url_for('static', filename='img/logo_arquivowhite.png') }}"
+                                        alt="arquivo.pt"
+                                        style="height: 1.5em; vertical-align: middle; padding-left: 3px;">
+                                </a>
+                            </p>
+                        </div>
+                        <div id="normalState" class="col-lg-6 text-center text-lg-start">
+                            <img class="img-fluid animated zoomIn" src="{{ url_for('static', filename='img/hero.png') }}" alt="Lupa Digital">
+                        </div>
+                        <!--
+                        <div id="loadingState" class="col-lg-6 text-center text-lg-start" style="display: none;">
+                            <img class="img-fluid" src="{{ url_for('static', filename='img/feature_01.gif') }}" alt="Lupa Digital">
+                            <p class="mt-2">Digite um tópico e pressione Enter LOADGIN</p>
+                            <p class="mt-2">Procurando tópico...</p>                           
+                        </div>
+                        -->
+                    </div>
+                </div>
+            </div>
+            <script>
+                document.getElementById("searchInput").addEventListener("keydown", function(event) {
+                    if (event.key === "Enter") {
+                        event.preventDefault();
+                        redirectToSearch();
+                    }
+                });
+
+                function redirectToSearch() {
+                    let inputValue = document.getElementById("searchInput").value.trim();
+                    if (inputValue) {
+                        // Show the loading indicator
+                        document.getElementById("loadingIndicator").style.display = "block";
+                        // Show loading state, hide normal state
+                        // document.getElementById("normalState").style.display = "none";
+                        // document.getElementById("loadingState").style.display = "block";
+
+                        // Disable input & button
+                        document.getElementById("searchInput").disabled = true;
+                        document.getElementById("searchInput-buttom").disabled = true;
+
+                        // Delay to allow the loader to be visible before redirect
+                        setTimeout(function() {
+                            window.location.href = `/pesquisa?topico=${encodeURIComponent(inputValue)}`;
+                        }, 500); // Adjust delay as needed
+                    } else {
+                        alert("Por favor, digite um tópico.");
+                    }
+                }
+            </script>
+        </div>
+        <!-- Navbar & Hero End -->
+
+        <!-- About Start -->
+        <div class="container-xxl py-5">
+            <div class="container px-lg-5">
+                <div class="row g-5">
+                    <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="section-title position-relative mb-4 pb-2">
+                            <h6 class="position-relative text-primary ps-4">Sobre a Lupa Digital</h6>
+                            <h2 class="mt-2">O que é a Lupa Digital?</h2>
+                        </div>
+                        <p class="mb-4" style="text-align: justify;">A Lupa Digital é uma plataforma que explora milhares de notícias arquivadas ao longo dos anos no Arquivo.pt, de modo a revelar conexões entre tópicos, entidades e eventos ao longo do tempo. Através do uso de inteligência artificial e processamento avançado de linguagem, a Lupa Digital identifica padrões, descobre relações inesperadas e permite uma nova forma de compreender a evolução da relação entre os mais variados tópicos.
+                        </p>
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <h6 class="mb-3"><i class="fa fa-check text-primary me-2"></i>História Preservada</h6>
+                                <h6 class="mb-0"><i class="fa fa-check text-primary me-2"></i>Análise de Relações</h6>
+                            </div>
+                            <div class="col-sm-6">
+                                <h6 class="mb-3"><i class="fa fa-check text-primary me-2"></i>Pesquisa Inteligente</h6>
+                                <h6 class="mb-0"><i class="fa fa-check text-primary me-2"></i>Visualizações Interativas</h6>
+                            </div>
+                        </div>
+                        <!--
+                        <div class="d-flex align-items-center mt-4">
+                            <a class="btn btn-primary rounded-pill px-4 me-3" href="">Read More</a>
+                            <a class="btn btn-outline-primary btn-square me-3" href=""><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-outline-primary btn-square me-3" href=""><i class="fab fa-twitter"></i></a>
+                            <a class="btn btn-outline-primary btn-square me-3" href=""><i class="fab fa-instagram"></i></a>
+                            <a class="btn btn-outline-primary btn-square" href=""><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                        -->
+                    </div>
+                    <div class="col-lg-6">
+                        <img class="img-fluid wow zoomIn" data-wow-delay="0.5s" src="{{ url_for('static', filename='img/about.jpg') }}">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- About End -->
+
+        <!-- News Sources Start -->
+        <div class="container-xxl bg-primary testimonial py-5 my-5 wow fadeInUp" data-wow-delay="0.1s">
+            <small class="text-white" style="position: absolute; left: 50%; transform: translateX(-50%);">A Lupa Digital recolhe informação através do Arquivo.pt de 19 fontes de notícias.</small>
+            <div class="container py-5 px-lg-5">
+                <div class="owl-carousel testimonial-carousel">
+                    <div class="testimonial-item bg-transparent border rounded text-white p-4">
+                        <img src="{{ url_for('static', filename='img/news_aeiou.png') }}" alt="news_aeiou logo" class="img-fluid w-100 rounded">
+                    </div>
+                    <div class="testimonial-item bg-transparent border rounded text-white p-4">
+                        <img src="{{ url_for('static', filename='img/news_cm.png') }}" alt="news_cm logo" class="img-fluid w-100 rounded">
+                    </div>
+                    <div class="testimonial-item bg-transparent border rounded text-white p-4">
+                        <img src="{{ url_for('static', filename='img/news_cnn.png') }}" alt="news_cnn logo" class="img-fluid w-100 rounded">
+                    </div>
+                    <div class="testimonial-item bg-transparent border rounded text-white p-4">
+                        <img src="{{ url_for('static', filename='img/news_dn.png') }}" alt="news_dn logo" class="img-fluid w-100 rounded">
+                    </div>
+                    <div class="testimonial-item bg-transparent border rounded text-white p-4">
+                        <img src="{{ url_for('static', filename='img/news_dv.png') }}" alt="news_dv logo" class="img-fluid w-100 rounded">
+                    </div>
+                    <div class="testimonial-item bg-transparent border rounded text-white p-4">
+                        <img src="{{ url_for('static', filename='img/news_expresso.png') }}" alt="news_expresso logo" class="img-fluid w-100 rounded">
+                    </div>
+                    <div class="testimonial-item bg-transparent border rounded text-white p-4">
+                        <img src="{{ url_for('static', filename='img/news_iol.png') }}" alt="news_iol logo" class="img-fluid w-100 rounded">
+                    </div>
+                    <div class="testimonial-item bg-transparent border rounded text-white p-4">
+                        <img src="{{ url_for('static', filename='img/news_jn.png') }}" alt="news_jn logo" class="img-fluid w-100 rounded">
+                    </div>
+                    <div class="testimonial-item bg-transparent border rounded text-white p-4">
+                        <img src="{{ url_for('static', filename='img/news_lusa.png') }}" alt="news_lusa logo" class="img-fluid w-100 rounded">
+                    </div>
+                    <div class="testimonial-item bg-transparent border rounded text-white p-4">
+                        <img src="{{ url_for('static', filename='img/news_negocios.png') }}" alt="news_negocios logo" class="img-fluid w-100 rounded">
+                    </div>
+                    <div class="testimonial-item bg-transparent border rounded text-white p-4">
+                        <img src="{{ url_for('static', filename='img/news_nit.png') }}" alt="news_nit logo" class="img-fluid w-100 rounded">
+                    </div>
+                    <div class="testimonial-item bg-transparent border rounded text-white p-4">
+                        <img src="{{ url_for('static', filename='img/news_notmin.png') }}" alt="news_notmin logo" class="img-fluid w-100 rounded">
+                    </div>
+                    <div class="testimonial-item bg-transparent border rounded text-white p-4">
+                        <img src="{{ url_for('static', filename='img/news_obs.png') }}" alt="news_obs logo" class="img-fluid w-100 rounded">
+                    </div>
+                    <div class="testimonial-item bg-transparent border rounded text-white p-4">
+                        <img src="{{ url_for('static', filename='img/news_publico.png') }}" alt="news_publico logo" class="img-fluid w-100 rounded">
+                    </div>
+                    <div class="testimonial-item bg-transparent border rounded text-white p-4">
+                        <img src="{{ url_for('static', filename='img/news_record.png') }}" alt="news_record logo" class="img-fluid w-100 rounded">
+                    </div>
+                    <div class="testimonial-item bg-transparent border rounded text-white p-4">
+                        <img src="{{ url_for('static', filename='img/news_rtp.png') }}" alt="news_rtp logo" class="img-fluid w-100 rounded">
+                    </div>
+                    <div class="testimonial-item bg-transparent border rounded text-white p-4">
+                        <img src="{{ url_for('static', filename='img/news_sapo.png') }}" alt="news_sapo logo" class="img-fluid w-100 rounded">
+                    </div>
+                    <div class="testimonial-item bg-transparent border rounded text-white p-4">
+                        <img src="{{ url_for('static', filename='img/news_sic.png') }}" alt="news_sic logo" class="img-fluid w-100 rounded">
+                    </div>
+                    <div class="testimonial-item bg-transparent border rounded text-white p-4">
+                        <img src="{{ url_for('static', filename='img/news_tsf.png') }}" alt="news_tsf logo" class="img-fluid w-100 rounded">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- News Sources End -->
+
+
+
+        <!-- Portfolio Start -->
+        <div class="container-xxl py-5">
+            <div class="container px-lg-5">
+                <div class="section-title position-relative text-center mb-5 pb-2 wow fadeInUp" data-wow-delay="0.1s">
+                    <h6 class="position-relative d-inline text-primary ps-4">Recursos da Lupa Digital</h6>
+                    <h2 class="mt-2">Descobre tudo o que podes fazer com a Lupa Digital!</h2>
+                </div>
+
+
+                <div class="row g-4 portfolio-container">
+                    <div class="col-lg-4 col-md-6 portfolio-item third wow zoomIn" data-wow-delay="0.1s">
+                        <div class="position-relative rounded overflow-hidden">
+                            <img class="img-fluid w-100" src="{{ url_for('static', filename='img/feature_01.png') }}" alt="">
+                            <div class="portfolio-overlay p-3">
+                                <a class="btn btn-light" href="{{ url_for('static', filename='img/feature_01.gif') }}" data-lightbox="portfolio">
+                                    <i class="fa fa-plus fa-2x text-primary"></i>
+                                </a>
+                                <div class="mt-auto">
+                                    <a class="h5 d-block text-white mt-1 mb-2" href="">&#128270; Pesquisa Avançada</a>
+                                    <p class="text-white small mb-0" style="text-align: justify;">
+                                        Pesquisa por qualquer tópico, tema ou entidade, e encontra notícias relacionadas, mesmo aquelas que já não estão mais disponíveis online. A Lupa Digital permite uma análise profunda de milhares de notícias, desde {{ globalVar['first_news'] }} até {{ globalVar['last_news'] }}.
+                                    </p>    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 portfolio-item second wow zoomIn" data-wow-delay="0.3s">
+                        <div class="position-relative rounded overflow-hidden">
+                            <img class="img-fluid w-100" src="{{ url_for('static', filename='img/feature_02.png') }}" alt="">
+                            <div class="portfolio-overlay p-3">
+                                <a class="btn btn-light" href="{{ url_for('static', filename='img/portfolio-2.jpg') }}" data-lightbox="portfolio"><i class="fa fa-plus fa-2x text-primary"></i></a>
+                                <div class="mt-auto">
+                                    <a class="h5 d-block text-white mt-1 mb-2" href="">&#128240; Descobre as Fontes</a>
+                                    <p class="text-white small mb-0" style="text-align: justify;">
+                                        Identifica as fontes de notícias que mais mencionaram o tópico de interesse, proporcionando uma visão clara sobre que meios de comunicação estão a abordar o tema e em que contexto.
+                                    </p>    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 portfolio-item first wow zoomIn" data-wow-delay="0.6s">
+                        <div class="position-relative rounded overflow-hidden">
+                            <img class="img-fluid w-100" src="{{ url_for('static', filename='img/feature_03.png') }}" alt="">
+                            <div class="portfolio-overlay p-3">
+                                <a class="btn btn-light" href="{{ url_for('static', filename='img/portfolio-3.jpg') }}" data-lightbox="portfolio"><i class="fa fa-plus fa-2x text-primary"></i></a>
+                                <div class="mt-auto">
+                                    <a class="h5 d-block text-white mt-1 mb-2" href="">&#128200; Séries Temporais</a>
+                                    <p class="text-white small mb-0" style="text-align: justify;">
+                                        Acompanha a evolução do número de menções do teu tópico ao longo do tempo. Descobre como ele se associa a outros temas e como essa relação tem vindo a mundar ao longo dos anos.
+                                    </p>    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 portfolio-item second wow zoomIn" data-wow-delay="0.1s">
+                        <div class="position-relative rounded overflow-hidden">
+                            <img class="img-fluid w-100" src="{{ url_for('static', filename='img/feature_04.png') }}" alt="">
+                            <div class="portfolio-overlay p-3">
+                                <a class="btn btn-light" href="{{ url_for('static', filename='img/portfolio-4.jpg') }}" data-lightbox="portfolio"><i class="fa fa-plus fa-2x text-primary"></i></a>
+                                <div class="mt-auto">
+                                    <a class="h5 d-block text-white mt-1 mb-2" href="">&#129300; Análise de Sentimento</a>
+                                    <p class="text-white small mb-0" style="text-align: justify;">
+                                        Avalia a percepção que as notícias têm sobre o tópico pesquisado. Entende se a narrativa em torno do tema é predominantemente positiva, negativa ou neutra, com base no tom das publicações.
+                                    </p>    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 portfolio-item first wow zoomIn" data-wow-delay="0.3s">
+                        <div class="position-relative rounded overflow-hidden">
+                            <img class="img-fluid w-100" src="{{ url_for('static', filename='img/feature_05.png') }}" alt="">
+                            <div class="portfolio-overlay p-3">
+                                <a class="btn btn-light" href="{{ url_for('static', filename='img/portfolio-5.jpg') }}" data-lightbox="portfolio"><i class="fa fa-plus fa-2x text-primary"></i></a>
+                                <div class="mt-auto">
+                                    <a class="h5 d-block text-white mt-1 mb-2" href="">&#128279; Pesquisa de Relações</a>
+                                    <p class="text-white small mb-0" style="text-align: justify;">
+                                        Investiga se outros tópicos estão relacionados ao tema pesquisado. Descobre de que forma estão ligados e como essa relação se desenvolveu ao longo do tempo.
+                                    </p>    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 portfolio-item wow zoomIn" data-wow-delay="0.6s">
+                        <div class="position-relative rounded overflow-hidden">
+                            <img class="img-fluid w-100" src="{{ url_for('static', filename='img/feature_06.png') }}" alt="">
+                            <div class="portfolio-overlay p-3">
+                                <a class="btn btn-light" href="{{ url_for('static', filename='img/portfolio-6.jpg') }}" data-lightbox="portfolio"><i class="fa fa-plus fa-2x text-primary"></i></a>
+                                <div class="mt-auto">
+                                    <a class="h5 d-block text-white mt-1 mb-2" href="">&#127760; Grafo de Relações</a>
+                                    <p class="text-white small mb-0" style="text-align: justify;">
+                                        Visualiza os 150 tópicos mais relacionados com o teu, incluindo a percepção associada, as principais fontes que mencionam esses tópicos e a sua evolução ao longo do tempo. Um mapa interativo para uma compreensão mais profunda das conexões entre os temas.
+                                    </p>    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Portfolio End -->
+
+        <!-- Footer Start -->
+        <div class="container-fluid bg-primary text-light footer mt-5 pt-5 wow fadeIn" data-wow-delay="0.1s">
+            <div class="container py-5 px-lg-5">
+                <div class="row g-5">
+                    <div class="col-md-6 col-lg-3">
+                        <h5 class="text-white mb-4">Entrar em Contacto</h5>
+                        <p><i class="fa fa-user me-3"></i>Hugo Veríssimo</p>
+                        <p><i class="fa fa-map-marker-alt me-3"></i>Aveiro, Portugal</p>
+                        <p><i class="fa fa-envelope me-3"></i>hugoverissimo@ua.pt</p>
+                        <div class="d-flex pt-2">
+                            <a class="btn btn-outline-light btn-social" target="_blank" href="https://www.linkedin.com/in/hugoverissimo21/"><i class="fab fa-linkedin-in"></i></a>
+                            <a class="btn btn-outline-light btn-social" target="_blank" href="https://github.com/Hugoverissimo21"><i class="fab fa-github"></i></a>
+                            <!--
+                            <a class="btn btn-outline-light btn-social" target="_blank" href=""><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-outline-light btn-social" target="_blank" href=""><i class="fab fa-youtube"></i></a>
+                            <a class="btn btn-outline-light btn-social" target="_blank" href=""><i class="fab fa-instagram"></i></a>
+                            -->
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <h5 class="text-white mb-4">Popular Link [ACABAR]</h5>
+                        <a class="btn btn-link" href="">Vídeo</a>
+                        <a class="btn btn-link" href="">Fonte de Dados</a>
+                        <a class="btn btn-link" href="">Base de Dados</a>
+                        <a class="btn btn-link" href="">Projeto GitHub</a>
+                        <a class="btn btn-link" href="">Relatório</a>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <h5 class="text-white mb-4">Project Gallery [ACABAR]</h5>
+                        <div class="row g-2">
+                            <div class="col-4">
+                                <img class="img-fluid" src="{{ url_for('static', filename='img/portfolio-2.jpg') }}" alt="Image">
+                            </div>
+                            <div class="col-4">
+                                <img class="img-fluid" src="{{ url_for('static', filename='img/portfolio-2.jpg') }}" alt="Image">
+                            </div>
+                            <div class="col-4">
+                                <img class="img-fluid" src="{{ url_for('static', filename='img/portfolio-3.jpg') }}" alt="Image">
+                            </div>
+                            <div class="col-4">
+                                <img class="img-fluid" src="{{ url_for('static', filename='img/portfolio-4.jpg') }}" alt="Image">
+                            </div>
+                            <div class="col-4">
+                                <img class="img-fluid" src="{{ url_for('static', filename='img/portfolio-5.jpg') }}" alt="Image">
+                            </div>
+                            <div class="col-4">
+                                <img class="img-fluid" src="{{ url_for('static', filename='img/portfolio-6.jpg') }}" alt="Image">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <h5 class="text-white mb-4">Sobre o Projeto</h5>
+                        <p style="text-align: justify;">Desenvolvido em 2025, por Hugo Veríssimo, no âmbito do Prémio Arquivo 2025, o projeto "Lupa Digital" tem como principal fonte de informação o Arquivo.pt.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="container px-lg-5">
+                <div class="copyright">
+                    <div class="row">
+                        <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                            &copy; <a class="border-bottom" href="#">Lupa Digital</a>. Todos os direitos reservados.
+							Desenhado por <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a>.
+                        </div>
+                        <div class="col-md-6 text-center text-md-end">
+                            <div class="footer-menu">
+                                <a href="#">Início</a>
+                                <a href="/sobre">Sobre</a>
+                                <a href="/grafo">Grafo</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer End -->
+
+
+        <!-- Back to Top -->
+        <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top pt-2"><i class="bi bi-arrow-up"></i></a>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='lib/wow/wow.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='lib/easing/easing.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='lib/waypoints/waypoints.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='lib/owlcarousel/owl.carousel.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='lib/isotope/isotope.pkgd.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='lib/lightbox/js/lightbox.min.js') }}"></script>
+
+    <!-- Template Javascript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+</body>
+
+</html>
