@@ -100,7 +100,7 @@ def initialize_graph(data, globalVar):
 
     # Node positions
     #pos = nx.spring_layout(G, seed=124348)
-    pos = nx.spring_layout(G, pos=pos, fixed=["center"], k=0.1, iterations=150, seed=21)
+    pos = nx.spring_layout(G, pos=pos, fixed=["center"], k=0.1, iterations=150, scale=1000, seed=21)
 
     G.remove_node("center")
     del pos["center"]
@@ -138,7 +138,7 @@ def node_info(node,
     node_form.append("circle")
 
     # Node size
-    node_size.append(np.log(G.nodes[node]["count"]/globalVar["min_count"])**3.5 + 50)
+    node_size.append(((np.log(G.nodes[node]["count"]/globalVar["min_count"]))*3)**1.5 + 50)
     
     # Node color
     sentiment = G.nodes[node]["sentiment"]
@@ -295,9 +295,12 @@ def create_graph(globalVar):
         showlegend=False,
         xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
         yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-        margin=dict(l=0, r=0, t=0, b=0),  # Remove all margins
-        plot_bgcolor="rgb(217, 238, 252)", #
-        paper_bgcolor="rgb(217, 238, 252)" #rgb(65, 67, 190) rgb(240, 251, 254) rgb(217, 238, 252)
+        margin=dict(l=0, r=0, t=0, b=0),
+        plot_bgcolor="rgb(217, 238, 252)",
+        paper_bgcolor="rgb(217, 238, 252)",
+        #font=dict(
+        #    family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif",
+        #)
     )
 
     # Generate the base HTML with graph

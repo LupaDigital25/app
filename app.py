@@ -50,7 +50,7 @@ globalVar = {
             "zero_results": True,
             "topicrelation": False,
             "total_amount_of_news": df.count(), # substituir por contagem "manual"
-            "first_news": str(df.agg(F.min("timestamp")).collect()[0][0]), # substituir por ano à mão
+            "first_news": 1998,
             "last_news": str(df.agg(F.max("timestamp")).collect()[0][0]), # substituir por ano à mão
             }
 
@@ -159,7 +159,7 @@ def pesquisa():
     
 
     # create graph src code
-    globalVar["graph_html"] = create_keyword_graph(globalVar['keywords'], 150, query)
+    globalVar["graph_html"] = create_keyword_graph(globalVar['keywords'], 125, query)
 
     # create pie plot from news sources
     globalVar["pie_sources"] = pie_newsSources(df_with_q) 
