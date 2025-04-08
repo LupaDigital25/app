@@ -174,8 +174,9 @@ def news_topicrelation(keywords, search_topic):
             title = title.lower()
             titles.add(title)
         elif title not in titles:
+            title = link_content[-1] if link_content[-1] != "" else link_content[-2]
             titles.add(title)
-            title = "Sem título disponível..."
+            #title = "Sem título disponível..."
         else:
             continue
 
@@ -225,7 +226,7 @@ def news_topicrelation(keywords, search_topic):
             divs[date] = [div]
 
     # sort the divs by date and prepare for output
-    divs = dict(sorted(divs.items(), key=lambda item: item[0], reverse=False))
+    divs = dict(sorted(divs.items(), key=lambda item: item[0], reverse=True))
     divs = "\n".join([div for divs_list in divs.values() for div in divs_list])
 
     return divs
