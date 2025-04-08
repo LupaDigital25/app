@@ -96,7 +96,7 @@ def ts_topicrelation(news_by_month, keywords, search_topic, query):
     fig.data[0].update(line=dict(color='rgba(101, 110, 242, 0.3)'))
     fig.data[1].update(line=dict(color='rgb(101, 110, 242)'))
 
-    fig.update_xaxes(tickformat="%m/%Y")
+    fig.update_xaxes(tickformat="%Y-%m")
 
     #fig.show(config={'displayModeBar': False})
     return pio.to_html(fig, full_html=False, config={'displayModeBar': False})

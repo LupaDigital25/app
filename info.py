@@ -48,10 +48,10 @@ def pie_newsSources(df_with_query):
 
 def timeseries_news(df_with_query, query):
     traducao_meses = {
-        "January": "Janeiro", "February": "Fevereiro", "March": "Março",
-        "April": "Abril", "May": "Maio", "June": "Junho",
-        "July": "Julho", "August": "Agosto", "September": "Setembro",
-        "October": "Outubro", "November": "Novembro", "December": "Dezembro"
+        "January": "janeiro", "February": "fevereiro", "March": "março",
+        "April": "abril", "May": "maio", "June": "junho",
+        "July": "julho", "August": "agosto", "September": "setembro",
+        "October": "outubro", "November": "novembro", "December": "dezembro"
     }
 
     news_by_month = (
@@ -101,7 +101,7 @@ def timeseries_news(df_with_query, query):
     fig.update_traces(
         hovertemplate="<b>Data:</b> %{customdata[0]}<br>"
                     "<b>Notícias:</b> %{y}<br>"
-                    "<b>Top 5 Tópicos:</b><br>%{customdata[1]}"
+                    "<b>Relações em Destaque:</b><br>%{customdata[1]}"
     )
 
     fig.update_layout(
@@ -113,9 +113,9 @@ def timeseries_news(df_with_query, query):
         xaxis=dict(
             showgrid=False,
             zeroline=True,
-            zerolinecolor="black",  # Change zero line color
-            linecolor="black",  # Axis border color
-            linewidth=2  # Axis border width
+            zerolinecolor="black",
+            linecolor="black",
+            linewidth=2
         ),
         yaxis=dict(
             range=[0, max(news_history["count_of_news"])*1.1],
@@ -134,7 +134,7 @@ def timeseries_news(df_with_query, query):
                                     font=dict(color='white')))
 
 
-    fig.update_xaxes(tickformat="%m/%Y")
+    fig.update_xaxes(tickformat="%Y-%m")
 
     return pio.to_html(fig, full_html=False, config={'displayModeBar': False}), news_by_month
 
