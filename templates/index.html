@@ -74,8 +74,8 @@
                     <div class="navbar-nav ms-auto py-0">
                         <a href="/" class="nav-item nav-link active">Início</a>
                         {% if not globalVar['search_done'] %}
-                            <a href="#" class="nav-item nav-link" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Começa com uma pesquisa!" data-bs-placement="bottom">Sobre</a>
-                            <a href="#" class="nav-item nav-link" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Começa com uma pesquisa!" data-bs-placement="bottom">Grafo</a>
+                            <a href="#" class="nav-item nav-link" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Comece com uma pesquisa." data-bs-placement="bottom">Sobre</a>
+                            <a href="#" class="nav-item nav-link" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Comece com uma pesquisa." data-bs-placement="bottom">Grafo</a>
                         {% elif globalVar['zero_results'] %}
                             <a href="/sobre" class="nav-item nav-link">Sobre</a>
                             <a href="#" class="nav-item nav-link" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Nada por aqui..." data-bs-placement="bottom">Grafo</a>
@@ -106,9 +106,9 @@
                     <div class="row g-5 py-5">
                         <div class="col-lg-6 text-center text-lg-start">
                             <h1 class="text-white mb-4 animated zoomIn">A Lupa que Revela Conexões</h1>
-                            <p class="text-white pb-3 animated zoomIn" style="text-align: justify;">A Lupa Digital permite-te explorar e analisar notícias arquivadas ao longo da era digital, revelando conexões e padrões entre tópicos, entidades e eventos.</p>
+                            <p class="text-white pb-3 animated zoomIn" style="text-align: justify;">A Lupa Digital permite explorar e analisar notícias arquivadas ao longo da era digital, revelando conexões e padrões entre tópicos, entidades e eventos.</p>
                             <div class="position-relative w-100 mt-3 animated zoomIn">
-                                <input id="searchInput" class="form-control border-0 rounded-pill w-100 ps-4 pe-5" type="text" placeholder="Procura sobre um tópico..." style="height: 48px;">
+                                <input id="searchInput" class="form-control border-0 rounded-pill w-100 ps-4 pe-5" type="text" placeholder="Procure sobre um tópico..." style="height: 48px;">
                                 <button id="searchInput-buttom" onclick="redirectToSearch()" type="submit" class="btn shadow-none position-absolute top-0 end-0 mt-1 me-2"><i class="fa fa-search text-primary fs-4"></i></button>
                             </div>
                             <p class="text-white pb-3 animated zoomIn mt-3">
@@ -279,7 +279,7 @@
             <div class="container px-lg-5">
                 <div class="section-title position-relative text-center mb-5 pb-2 wow fadeInUp" data-wow-delay="0.1s">
                     <h6 class="position-relative d-inline text-primary ps-4">Recursos da Lupa Digital</h6>
-                    <h2 class="mt-2">Descobre tudo o que podes fazer com a Lupa Digital!</h2>
+                    <h2 class="mt-2">Descubra tudo o que pode fazer com a Lupa Digital!</h2>
                 </div>
 
 
@@ -294,7 +294,7 @@
                                 <div class="mt-auto">
                                     <a class="h5 d-block text-white mt-1 mb-2" href="">&#128270; Pesquisa Avançada</a>
                                     <p class="text-white small mb-0" style="text-align: justify;">
-                                        Pesquisa por qualquer tópico, tema ou entidade, e encontra notícias relacionadas, mesmo aquelas que já não estão mais disponíveis online. A Lupa Digital permite uma análise profunda de milhares de notícias, desde {{ globalVar['first_news'] }} até {{ globalVar['last_news'] }}.
+                                        Pesquise por qualquer tópico, tema ou entidade, e encontre notícias relacionadas, mesmo aquelas que já não estão mais disponíveis online. A Lupa Digital permite uma análise profunda de milhares de notícias, desde {{ globalVar['first_news'] }} até {{ globalVar['last_news'] }}.
                                     </p>    
                                 </div>
                             </div>
@@ -308,7 +308,7 @@
                                 <div class="mt-auto">
                                     <a class="h5 d-block text-white mt-1 mb-2" href="">&#128240; Descobre as Fontes</a>
                                     <p class="text-white small mb-0" style="text-align: justify;">
-                                        Identifica as fontes de notícias que mais mencionaram o tópico de interesse, proporcionando uma visão clara sobre que meios de comunicação estão a abordar o tema e em que contexto.
+                                        Identifique as fontes de notícias que mais mencionaram o seu tópico de interesse, obtendo uma visão clara sobre que meios de comunicação estão a abordar o tema e em que contexto.
                                     </p>    
                                 </div>
                             </div>
@@ -322,7 +322,7 @@
                                 <div class="mt-auto">
                                     <a class="h5 d-block text-white mt-1 mb-2" href="">&#128200; Séries Temporais</a>
                                     <p class="text-white small mb-0" style="text-align: justify;">
-                                        Acompanha a evolução do número de menções do teu tópico ao longo do tempo. Descobre como ele se associa a outros temas e como essa relação tem vindo a mundar ao longo dos anos.
+                                        Acompanhe a evolução do número de menções do seu tópico ao longo do tempo. Descubra como ele se associa a outros temas e como essa relação tem vindo a mundar ao longo dos anos.
                                     </p>    
                                 </div>
                             </div>
@@ -336,7 +336,7 @@
                                 <div class="mt-auto">
                                     <a class="h5 d-block text-white mt-1 mb-2" href="">&#129300; Análise de Sentimento</a>
                                     <p class="text-white small mb-0" style="text-align: justify;">
-                                        Avalia a percepção que as notícias têm sobre o tópico pesquisado. Entende se a narrativa em torno do tema é predominantemente positiva, negativa ou neutra, com base no tom das publicações.
+                                        Avalie a percepção que as notícias têm sobre o tópico pesquisado. Entenda se a narrativa em torno do tema é predominantemente positiva, negativa ou neutra, com base no tom das publicações.
                                     </p>    
                                 </div>
                             </div>
@@ -350,7 +350,7 @@
                                 <div class="mt-auto">
                                     <a class="h5 d-block text-white mt-1 mb-2" href="">&#128279; Pesquisa de Relações</a>
                                     <p class="text-white small mb-0" style="text-align: justify;">
-                                        Investiga se outros tópicos estão relacionados ao tema pesquisado. Descobre de que forma estão ligados e como essa relação se desenvolveu ao longo do tempo.
+                                        Investigue se outros tópicos estão relacionados ao tema pesquisado. Descubra de que forma estão ligados e como essa relação se desenvolveu ao longo do tempo.
                                     </p>    
                                 </div>
                             </div>
@@ -364,8 +364,8 @@
                                 <div class="mt-auto">
                                     <a class="h5 d-block text-white mt-1 mb-2" href="">&#127760; Grafo de Relações</a>
                                     <p class="text-white small mb-0" style="text-align: justify;">
-                                        Visualiza os 125 tópicos mais relacionados com o teu, incluindo a percepção associada, as principais fontes que mencionam esses tópicos e a sua evolução ao longo do tempo. Um mapa interativo para uma compreensão mais profunda das conexões entre os temas.
-                                    </p>    
+                                        Visualize os 125 tópicos mais relacionados com o seu, incluindo a percepção associada, as principais fontes que mencionam esses tópicos e a sua evolução ao longo do tempo. Um mapa interativo para uma compreensão mais profunda das conexões entre os temas.
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -395,12 +395,11 @@
                         </div>
                     </div>
                     <div class="col-md-6 col-lg-3">
-                        <h5 class="text-white mb-4">Popular Link [ACABAR]</h5>
-                        <a class="btn btn-link" href="">Vídeo</a>
-                        <a class="btn btn-link" href="">Fonte de Dados</a>
-                        <a class="btn btn-link" href="">Base de Dados</a>
-                        <a class="btn btn-link" href="">Projeto GitHub</a>
-                        <a class="btn btn-link" href="">Relatório</a>
+                        <h5 class="text-white mb-4">Recursos</h5>
+                        <a class="btn btn-link" href="https://arquivo.pt" target="_blank">Fonte dos dados</a>
+                        <a class="btn btn-link" href="" target="_blank">Base de dados [Lnk]</a>
+                        <a class="btn btn-link" href="https://github.com/LupaDigital25" target="_blank">Código-fonte</a>
+                        <a class="btn btn-link" href="" target="_blank">Descrição sumária [Lnk]</a>
                     </div>
                     <div class="col-md-6 col-lg-3">
                         <h5 class="text-white mb-4">Project Gallery [ACABAR]</h5>

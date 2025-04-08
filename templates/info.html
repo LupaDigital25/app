@@ -175,7 +175,7 @@
                                 <h6 class="mb-4 text-center"><i class="fa fa-times text-primary me-2"></i>Erro ortográfico</h6>
                             </div>
                         </div>
-                        <p class="mb-0" style="text-align: justify;">Assim, podes optar por uma nova pesquisa ou explorar alguns exemplos de tópicos em diversas vertentes, como Economia, Desporto, Cultura, Política ou Temáticas.</p>
+                        <p class="mb-0" style="text-align: justify;">Assim, pode optar por uma nova pesquisa ou explorar alguns exemplos de tópicos em diversas vertentes, como Economia, Desporto, Cultura, Política ou Temáticas.</p>
                         <div class="d-flex justify-content-center align-items-center mt-4">
                             <a class="btn btn-primary rounded-pill px-4 me-3 mb-3" href="/">Nova Pesquisa</a>
                         </div>
@@ -225,14 +225,15 @@
                         </div>
                         <p class="mb-3" style="text-align: justify;">
                             Foram encontradas {{ globalVar['query_amountofnews'] }} notícias sobre o tópico <u>{{ globalVar['query'] }}</u>, com a primeira notícia a {{ globalVar['query_firstnews'] }}.
-                            <br>Podes agora explorar as fontes de informação que mais escreveram sobre o teu tópico e como é que a sua perceção tem vindo a evoluir ao longo do tempo, através dos gráficos interativos.
+                            <br>Pode agora explorar as fontes de informação que mais escreveram sobre o seu tópico e como é que a sua perceção tem vindo a evoluir ao longo do tempo, através dos gráficos interativos.
                         </p>
                         <div class="row g-3">
                             <div class="col-sm-12">
-                                <h6 class="mb-3"><i class="fa fa-check text-primary me-2"></i>Gráfico circular (MELHORAR)</h6>
-                                <h6 class="mb-0"><i class="fa fa-check text-primary me-2"></i>Série temporal (MELHORAR)</h6>
+                                <h6 class="mb-3"><i class="fa fa-check text-primary me-2"></i>Gráfico circular</h6>
+                                <h6 class="mb-3"><i class="fa fa-check text-primary me-2"></i>Série temporal</h6>
                             </div>
                         </div>
+                        <p class="mb-3" style="text-align: justify;">Passe com o rato sobre os gráficos para descobrir mais informações.</p>
                     </div>
                     <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s">
                         {{ globalVar['pie_sources'] | safe }}
@@ -256,7 +257,7 @@
                 <div class="row align-items-center" style="height: 250px;">
                     <div class="col-12 col-md-6">
                         <h3>Descubra Ligações a <u>{{ globalVar['query'] }}</u></h3>
-                        <small style="text-align: justify; display: block;">Escolhe um tópico para verificar se está relacionado com <u>{{ globalVar['query'] }}</u>, e se estiver, qual é a perceção dessa relação, as fontes de informação que a mais mencionam e como é que esta tem vindo a evoluir ao longo dos anos.</small>
+                        <small style="text-align: justify; display: block;">Escolha um tópico para verificar se está relacionado com <u>{{ globalVar['query'] }}</u>, e se estiver, qual é a perceção dessa relação, as fontes de informação que a mais mencionam e como é que esta tem vindo a evoluir ao longo dos anos.</small>
                         <div class="position-relative w-100 mt-3 rounded-pill" style="border:2px solid #2124B1;">
                             <input id="relationInput" class="form-control border-0 rounded-pill w-100 ps-4 pe-5" type="text" placeholder="Escolha um tópico para verificar..." style="height: 48px;">
                             <button onclick="redirectToRelation()" type="submit" class="btn shadow-none position-absolute top-0 end-0 mt-1 me-2"><i class="fa fa-search text-primary fs-4"></i></button>
@@ -309,9 +310,9 @@
                                     <h6 class="mb-4 text-center"><i class="fa fa-times text-primary me-2"></i>Erro ortográfico</h6>
                                 </div>
                             </div>
-                            <p class="mb-0" style="text-align: justify;">Podes agora optar por verificar outra ligação entre tópicos à tua escolha, ou uma aleatória, por exemplo {{ globalVar['recomendations_topicrelation'] | safe }}.</p>
+                            <p class="mb-0" style="text-align: justify;">Pode agora optar por verificar outra ligação entre tópicos à sua escolha, ou uma aleatória, por exemplo {{ globalVar['recomendations_topicrelation'] | safe }}.</p>
                         {% else %}
-                            <p class="mb-4" style="text-align: justify;">Nas {{ globalVar['query_amountofnews'] }} notícias sobre <u>{{ globalVar['query'] }}</u>, foram encontradas {{ globalVar['count_topicrelation'] }} menções em relação a <u>{{ globalVar['related_topic'] }}</u>.<br>Utilizando as ferramentas da Lupa Digital disponíveis poderás agora verificar quanto à relação:</p>
+                            <p class="mb-4" style="text-align: justify;">Nas {{ globalVar['query_amountofnews'] }} notícias sobre <u>{{ globalVar['query'] }}</u>, foram encontradas {{ globalVar['count_topicrelation'] }} menções em relação a <u>{{ globalVar['related_topic'] }}</u>.<br>Utilizando as ferramentas da Lupa Digital disponíveis poderá agora verificar quanto à relação:</p>
                             <div class="row g-3">
                                 <div class="col-sm-3"><h6 class="mb-5 text-center"><i class="fa fa-check text-primary me-2"></i>Fontes de Informação</h6></div>
                                 <div class="col-sm-3"><h6 class="mb-5 text-center"><i class="fa fa-check text-primary me-2"></i>Perceção do Sentimento</h6></div>
@@ -361,7 +362,7 @@
         
         {% if globalVar['topicrelation_exists'] %}
         <div class="container-xxl bg-primary testimonial py-5 wow fadeInUp" data-wow-delay="0.1s">
-            <small class="text-white text-center" style="position: absolute; left: 50%; transform: translateX(-50%);">Encontra aqui algumas notícias arquivadas pelo <a href="https://arquivo.pt" target="_blank" style="text-decoration: none; color: inherit;">Arquivo.pt</a> que contêm a relação <u>{{ globalVar['query'] }}</u> & <u>{{ globalVar['related_topic'] }}</u>.</small>
+            <small class="text-white text-center" style="position: absolute; left: 50%; transform: translateX(-50%);">Encontre aqui algumas notícias arquivadas pelo <a href="https://arquivo.pt" target="_blank" style="text-decoration: none; color: inherit;">Arquivo.pt</a> que contêm a relação <u>{{ globalVar['query'] }}</u> & <u>{{ globalVar['related_topic'] }}</u>.</small>
             <div class="container py-5 px-lg-5">
                 <div class="owl-carousel testimonial-carousel">
                     {{ globalVar['news_topicrelation'] | safe }}
@@ -383,8 +384,8 @@
                             <div class="service-icon flex-shrink-0">
                                 <i class="fa fa-network-wired fa-2x"></i>
                             </div>
-                            <h5 class="mb-12">Aprofunda as Conexões</h5>
-                            <p>Já exploraste as principais fontes de informação e analisaste como as notícias evoluíram ao longo do tempo sobre este tópico. Se não quiseres verificar a presença de mais relações à tua escolha, dá o próximo passo: visualiza o grafo de relações e descobre quais são os tópicos que mais se relacionam com a tua pesquisa.</p>
+                            <h5 class="mb-12">Aprofunde as Conexões</h5>
+                            <p>Já explorou as principais fontes de informação e analisou como as notícias evoluíram ao longo do tempo sobre este tópico. Se não quiser verificar a presença de mais relações à sua escolha, dê o próximo passo: visualize o grafo de relações e descubra quais são os tópicos que mais se relacionam com a sua pesquisa.</p>
                             <a class="btn px-3 mt-auto mx-auto" href="/grafo">Ver Grafo</a>
                         </div>
                     </div>
