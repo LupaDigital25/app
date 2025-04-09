@@ -84,12 +84,14 @@
                             <a href="/grafo" class="nav-item nav-link">Grafo</a>
                         {% endif %}
                     </div>
-                    <button type="button" class="btn text-secondary ms-3" onclick="window.location.href='/'">
-                        <i class="fa fa-search"></i>
-                    </button>
-                    {% if globalVar['query'] %}
-                    <a href="javascript:void(0);" style="pointer-events: none; cursor: default; box-shadow: inset 0 0 0 2px rgb(82, 118, 237); color: rgb(82, 118, 237);" class="nav-item nav-link btn rounded-pill py-2 px-4 ms-3">{{ globalVar['query'] }}</a>
-                    {% endif %}
+                    <div class="d-none d-lg-flex">
+                        <button type="button" class="btn text-secondary ms-3" onclick="window.location.href='/'">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        {% if globalVar['query'] %}
+                        <a href="javascript:void(0);" style="pointer-events: none; cursor: default; box-shadow: inset 0 0 0 2px rgb(82, 118, 237); color: rgb(82, 118, 237);" class="nav-item nav-link btn rounded-pill py-2 px-4 ms-3">{{ globalVar['query'] }}</a>
+                        {% endif %}
+                    </div>
                 </div>
             </nav>
             <script>
@@ -206,9 +208,9 @@
         <!-- About End -->
 
         <!-- News Sources Start -->
-        <div class="container-xxl bg-primary testimonial py-5 my-5 wow fadeInUp" data-wow-delay="0.1s">
-            <small class="text-white" style="position: absolute; left: 50%; transform: translateX(-50%);">A Lupa Digital recolhe informação através do Arquivo.pt de 19 fontes de notícias.</small>
-            <div class="container py-5 px-lg-5">
+        <div class="container-xxl bg-primary testimonial py-3 my-5 wow fadeInUp" data-wow-delay="0.1s">
+            <small class="text-white d-block text-center" style="text-align: center; padding-top: 1.5em;">A Lupa Digital recolhe informação através do <a href="https://arquivo.pt" target="_blank" style="text-decoration: none; color: inherit;">Arquivo.pt</a> de 19 fontes de notícias.</small>
+            <div class="container px-lg-5" style="padding-bottom:3rem; padding-top: 1.5em;">
                 <div class="owl-carousel testimonial-carousel">
                     <div class="testimonial-item bg-transparent border rounded text-white p-4">
                         <img src="{{ url_for('static', filename='img/news_aeiou.png') }}" alt="news_aeiou logo" class="img-fluid w-100 rounded">
@@ -281,8 +283,6 @@
                     <h6 class="position-relative d-inline text-primary ps-4">Recursos da Lupa Digital</h6>
                     <h2 class="mt-2">Descubra tudo o que pode fazer com a Lupa Digital!</h2>
                 </div>
-
-
                 <div class="row g-4 portfolio-container">
                     <div class="col-lg-4 col-md-6 portfolio-item third wow zoomIn" data-wow-delay="0.1s">
                         <div class="position-relative rounded overflow-hidden">
@@ -292,7 +292,7 @@
                                     <i class="fa fa-plus fa-2x text-primary"></i>
                                 </a>
                                 <div class="mt-auto">
-                                    <a class="h5 d-block text-white mt-1 mb-2" href="">&#128270; Pesquisa Avançada</a>
+                                    <a class="h5 d-block text-white mt-1 mb-2">&#128270; Pesquisa Avançada</a>
                                     <p class="text-white small mb-0" style="text-align: justify;">
                                         Pesquise por qualquer tópico, tema ou entidade, e encontre notícias relacionadas, mesmo aquelas que já não estão mais disponíveis online. A Lupa Digital permite uma análise profunda de milhares de notícias, desde {{ globalVar['first_news'] }} até {{ globalVar['last_news'] }}.
                                     </p>    
@@ -306,7 +306,7 @@
                             <div class="portfolio-overlay p-3">
                                 <a class="btn btn-light" href="{{ url_for('static', filename='img/portfolio-2.jpg') }}" data-lightbox="portfolio"><i class="fa fa-plus fa-2x text-primary"></i></a>
                                 <div class="mt-auto">
-                                    <a class="h5 d-block text-white mt-1 mb-2" href="">&#128240; Descobre as Fontes</a>
+                                    <a class="h5 d-block text-white mt-1 mb-2">&#128240; Descobre as Fontes</a>
                                     <p class="text-white small mb-0" style="text-align: justify;">
                                         Identifique as fontes de notícias que mais mencionaram o seu tópico de interesse, obtendo uma visão clara sobre que meios de comunicação estão a abordar o tema e em que contexto.
                                     </p>    
@@ -320,7 +320,7 @@
                             <div class="portfolio-overlay p-3">
                                 <a class="btn btn-light" href="{{ url_for('static', filename='img/portfolio-3.jpg') }}" data-lightbox="portfolio"><i class="fa fa-plus fa-2x text-primary"></i></a>
                                 <div class="mt-auto">
-                                    <a class="h5 d-block text-white mt-1 mb-2" href="">&#128200; Séries Temporais</a>
+                                    <a class="h5 d-block text-white mt-1 mb-2">&#128200; Séries Temporais</a>
                                     <p class="text-white small mb-0" style="text-align: justify;">
                                         Acompanhe a evolução do número de menções do seu tópico ao longo do tempo. Descubra como ele se associa a outros temas e como essa relação tem vindo a mundar ao longo dos anos.
                                     </p>    
@@ -334,7 +334,7 @@
                             <div class="portfolio-overlay p-3">
                                 <a class="btn btn-light" href="{{ url_for('static', filename='img/portfolio-4.jpg') }}" data-lightbox="portfolio"><i class="fa fa-plus fa-2x text-primary"></i></a>
                                 <div class="mt-auto">
-                                    <a class="h5 d-block text-white mt-1 mb-2" href="">&#129300; Análise de Sentimento</a>
+                                    <a class="h5 d-block text-white mt-1 mb-2">&#129300; Análise de Sentimento</a>
                                     <p class="text-white small mb-0" style="text-align: justify;">
                                         Avalie a percepção que as notícias têm sobre o tópico pesquisado. Entenda se a narrativa em torno do tema é predominantemente positiva, negativa ou neutra, com base no tom das publicações.
                                     </p>    
@@ -348,7 +348,7 @@
                             <div class="portfolio-overlay p-3">
                                 <a class="btn btn-light" href="{{ url_for('static', filename='img/portfolio-5.jpg') }}" data-lightbox="portfolio"><i class="fa fa-plus fa-2x text-primary"></i></a>
                                 <div class="mt-auto">
-                                    <a class="h5 d-block text-white mt-1 mb-2" href="">&#128279; Pesquisa de Relações</a>
+                                    <a class="h5 d-block text-white mt-1 mb-2">&#128279; Pesquisa de Relações</a>
                                     <p class="text-white small mb-0" style="text-align: justify;">
                                         Investigue se outros tópicos estão relacionados ao tema pesquisado. Descubra de que forma estão ligados e como essa relação se desenvolveu ao longo do tempo.
                                     </p>    
@@ -362,7 +362,7 @@
                             <div class="portfolio-overlay p-3">
                                 <a class="btn btn-light" href="{{ url_for('static', filename='img/portfolio-6.jpg') }}" data-lightbox="portfolio"><i class="fa fa-plus fa-2x text-primary"></i></a>
                                 <div class="mt-auto">
-                                    <a class="h5 d-block text-white mt-1 mb-2" href="">&#127760; Grafo de Relações</a>
+                                    <a class="h5 d-block text-white mt-1 mb-2">&#127760; Grafo de Relações</a>
                                     <p class="text-white small mb-0" style="text-align: justify;">
                                         Visualize os 125 tópicos mais relacionados com o seu, incluindo a percepção associada, as principais fontes que mencionam esses tópicos e a sua evolução ao longo do tempo. Um mapa interativo para uma compreensão mais profunda das conexões entre os temas.
                                     </p>
