@@ -87,6 +87,21 @@
         });
     </script>
     {% endif %}
+
+    <!-- Topic Search Overlay -->
+    <style>
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(33, 36, 177, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+    </style>
 </head>
 
 <body>
@@ -98,6 +113,16 @@
             </div>
         </div>
         <!-- Spinner End -->
+         <!-- Loading Search Start -->
+        <div id="loadingIndicator" style="display: none;" class="loading-overlay">
+            <div class="text-center">
+                <div class="spinner-border text-white" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2 text-white">A analisar {{ globalVar['total_amount_of_news'] }} notícias...</p>
+            </div>
+        </div>        
+         <!-- Loading Search End -->
 
 
         <!-- Navbar & Hero Start -->
@@ -177,40 +202,56 @@
                                 <h6 class="mb-4 text-center"><i class="fa fa-times text-primary me-2"></i>Erro ortográfico</h6>
                             </div>
                         </div>
-                        <p class="mb-0" style="text-align: justify;">Assim, pode optar por uma nova pesquisa ou explorar alguns exemplos de tópicos em diversas vertentes, como Economia, Desporto, Cultura, Política ou Temáticas.</p>
+                        <p class="mb-0" style="text-align: justify;">Assim, pode optar por uma nova pesquisa ou explorar alguns exemplos de tópicos em diversas vertentes, como Cultura, Desporto, Economia, Política ou Temáticas.</p>
                         <div class="d-flex justify-content-center align-items-center mt-4">
                             <a class="btn btn-primary rounded-pill px-4 me-3 mb-3" href="/">Nova Pesquisa</a>
                         </div>
                     </div>
                     <div class="col-lg-6 wow fadeInUp mt-0" data-wow-delay="0.1s">
                         <div class="row g-3 recomendations">
-                                <h6 class="mb-2"><i class="fa fa-check text-primary me-2"></i>Economia:
-                                    <a href="/pesquisa?topico=Banco%20de%20Portugal">Banco de Portugal</a><a>, </a>
-                                    <a href="/pesquisa?topico=inflação">inflação</a><a>, </a>
-                                    <a href="/pesquisa?topico=Sonae">Sonae</a>
-                                </h6>
-                                <h6 class="mb-2"><i class="fa fa-check text-primary me-2"></i>Desporto:
-                                    <a href="/pesquisa?topico=futebol">futebol</a><a>, </a>
-                                    <a href="/pesquisa?topico=Benfica">Benfica</a><a>, </a>
-                                    <a href="/pesquisa?topico=José%20Mourinho">José Mourinho</a>
-                                </h6>
-                                <h6 class="mb-2"><i class="fa fa-check text-primary me-2"></i>Cultura:
-                                    <a href="/pesquisa?topico=fado">fado</a><a>, </a>
-                                    <a href="/pesquisa?topico=Eurovisão">Eurovisão</a><a>, </a>
-                                    <a href="/pesquisa?topico=Fernando%20Pessoa">Fernando Pessoa</a>
-                                </h6>
-                                <h6 class="mb-2"><i class="fa fa-check text-primary me-2"></i>Política:
-                                    <a href="/pesquisa?topico=governo">governo</a><a>, </a>
-                                    <a href="/pesquisa?topico=PS">PS</a><a>, </a>
-                                    <a href="/pesquisa?topico=António%20Costa">António Costa</a>
-                                </h6>
-                                <h6 class="mb-2"><i class="fa fa-check text-primary me-2"></i>Temáticas:
-                                    <a href="/pesquisa?topico=saúde">saúde</a><a>, </a>
-                                    <a href="/pesquisa?topico=educação">educação</a><a>, </a>
-                                    <a href="/pesquisa?topico=migração">migração</a>
-                                </h6>
+                            <h6 class="mb-2"><i class="fa fa-check text-primary me-2"></i>Cultura:
+                                <a href="javascript:void(0);" onclick="redirectToSearch('fado')">fado</a><a>, </a>
+                                <a href="javascript:void(0);" onclick="redirectToSearch('Eurovisão')">Eurovisão</a><a>, </a>
+                                <a href="javascript:void(0);" onclick="redirectToSearch('Fernando Pessoa')">Fernando Pessoa</a>
+                            </h6>
+                            <h6 class="mb-2"><i class="fa fa-check text-primary me-2"></i>Desporto:
+                                <a href="javascript:void(0);" onclick="redirectToSearch('futebol')">futebol</a><a>, </a>
+                                <a href="javascript:void(0);" onclick="redirectToSearch('Benfica')">Benfica</a><a>, </a>
+                                <a href="javascript:void(0);" onclick="redirectToSearch('José Mourinho')">José Mourinho</a>
+                            </h6>
+                            <h6 class="mb-2"><i class="fa fa-check text-primary me-2"></i>Economia:
+                                <a href="javascript:void(0);" onclick="redirectToSearch('Banco de Portugal')">Banco de Portugal</a><a>, </a>
+                                <a href="javascript:void(0);" onclick="redirectToSearch('inflação')">inflação</a><a>, </a>
+                                <a href="javascript:void(0);" onclick="redirectToSearch('Sonae')">Sonae</a>
+                            </h6>
+                            <h6 class="mb-2"><i class="fa fa-check text-primary me-2"></i>Política:
+                                <a href="javascript:void(0);" onclick="redirectToSearch('governo')">governo</a><a>, </a>
+                                <a href="javascript:void(0);" onclick="redirectToSearch('PS')">PS</a><a>, </a>
+                                <a href="javascript:void(0);" onclick="redirectToSearch('António Costa')">António Costa</a>
+                            </h6>
+                            <h6 class="mb-2"><i class="fa fa-check text-primary me-2"></i>Temáticas:
+                                <a href="javascript:void(0);" onclick="redirectToSearch('saúde')">saúde</a><a>, </a>
+                                <a href="javascript:void(0);" onclick="redirectToSearch('educação')">educação</a><a>, </a>
+                                <a href="javascript:void(0);" onclick="redirectToSearch('migração')">migração</a>
+                            </h6>
                         </div>
                     </div>
+                    <script>
+                        function redirectToSearch(inputValue) {
+                            inputValue = inputValue.trim();
+
+                            // Show the loading indicator
+                            document.getElementById("loadingIndicator").style.display = "flex";
+
+                            // Disable scrolling
+                            document.body.style.overflow = 'hidden';
+
+                            // Delay to allow the loader to be visible before redirect
+                            setTimeout(function() {
+                                window.location.href = `/pesquisa?topico=${encodeURIComponent(inputValue)}`;
+                            }, 500);
+                        }
+                    </script>
                 </div>
             </div>
         </div>

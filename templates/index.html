@@ -40,6 +40,21 @@
         display: none !important;
         }
     </style>
+
+    <!-- Topic Search Overlay -->
+    <style>
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(33, 36, 177, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+    </style>
 </head>
 
 <body>
@@ -52,12 +67,14 @@
         </div>
         <!-- Spinner End -->
         <!-- Loading Search Start -->
-        <div id="loadingIndicator" style="display: none;" class="text-center pt-3">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
+        <div id="loadingIndicator" style="display: none;" class="loading-overlay">
+            <div class="text-center">
+                <div class="spinner-border text-white" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2 text-white">A analisar {{ globalVar['total_amount_of_news'] }} notícias...</p>
             </div>
-            <p class="mt-2">A analisar {{ globalVar['total_amount_of_news'] }} notícias...</p>
-        </div>
+        </div>        
          <!-- Loading Search End -->
 
 
@@ -147,10 +164,10 @@
                     let inputValue = document.getElementById("searchInput").value.trim();
                     if (inputValue) {
                         // Show the loading indicator
-                        document.getElementById("loadingIndicator").style.display = "block";
-                        // Show loading state, hide normal state
-                        // document.getElementById("normalState").style.display = "none";
-                        // document.getElementById("loadingState").style.display = "block";
+                        document.getElementById("loadingIndicator").style.display = "flex";
+
+                        // Disable scrolling
+                        document.body.style.overflow = 'hidden';
 
                         // Disable input & button
                         document.getElementById("searchInput").disabled = true;
@@ -159,7 +176,7 @@
                         // Delay to allow the loader to be visible before redirect
                         setTimeout(function() {
                             window.location.href = `/pesquisa?topico=${encodeURIComponent(inputValue)}`;
-                        }, 500); // Adjust delay as needed
+                        }, 500);
                     } else {
                         alert("Por favor, digite um tópico.");
                     }
