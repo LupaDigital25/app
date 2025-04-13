@@ -13,45 +13,44 @@ import os
 import hashlib
 import json
 import random
+import re
+import unicodedata
 
 # Local
 from graph import create_keyword_graph
 from info import pie_newsSources, timeseries_news, topic_wordcloud
 from info2 import ts_topicrelation, sources_topicrelation, news_topicrelation
 
-# testing
-#from flask import redirect, url_for
-
-
+# Functions
+def standardize_keyword(texto):
+    texto = texto.lower()
+    texto = unicodedata.normalize('NFKD', texto).encode('ASCII', 'ignore').decode('utf-8')
+    texto = re.sub(r'[^a-z0-9\s]', ' ', texto)
+    texto = re.sub(r'\s+', ' ', texto)
+    return texto.strip()
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
-# Initialize SparkSession
-spark = SparkSession.builder \
-    .appName("News App") \
-    .config("spark.ui.enabled", "false") \
-    .getOrCreate()
+if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
 
-# Define the data schema
-schema = StructType([
-    StructField("timestamp", IntegerType(), True),
-    StructField("source", StringType(), True),
-    StructField("archive", StringType(), True),
-    StructField("id", IntegerType(), True),
-    StructField("probability", FloatType(), True),
-    StructField("keywords", MapType(StringType(), IntegerType()), True),
-    StructField("sentiment", FloatType(), True)
-])
-df = spark.read.format("json").schema(schema).load("../data/news/status=success")
+    # Initialize SparkSession
+    spark = SparkSession.builder \
+        .appName("News App") \
+        .config("spark.ui.enabled", "false") \
+        .config("spark.driver.memory", "4g") \
+        .config("spark.executor.memory", "4g") \
+        .getOrCreate()
+    
+    df = spark.read.parquet("../data/news_processed")
 
 globalVar = {
             "search_done": False,
             "zero_results": True,
             "topicrelation": False,
-            "total_amount_of_news": df.count(), # substituir por contagem "manual"
-            "first_news": 1998,
-            "last_news": str(df.agg(F.max("timestamp")).collect()[0][0]), # substituir por ano à mão
+            "total_amount_of_news": 349519, #df.count()
+            "first_news": 1998, #df.select("timestamp").orderBy("timestamp").first()[0])
+            "last_news": 2024, #df.select("timestamp").orderBy(df.timestamp.desc()).first()[0]
             }
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
@@ -80,13 +79,11 @@ def grafo():
 
     return render_template('graph.html', globalVar=globalVar)
 
-
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-
 @app.route('/pesquisa', methods=['GET'])
 def pesquisa():
     global globalVar
+
+    # update 
     globalVar["search_done"] = True
     globalVar["zero_results"] = False
     globalVar["topicrelation"] = False
@@ -96,85 +93,86 @@ def pesquisa():
     globalVar['query'] = query
 
     # data filtering
-    query_col_counts = F.col("keywords").getItem(query)
-    df_with_q = df.filter(query_col_counts.isNotNull() & (query_col_counts > 4)).cache()
-    globalVar['query_amountofnews'] = df_with_q.count()
+    df_with_query = df.filter(F.array_contains(df["significant_keywords"], standardize_keyword(query)))
+    globalVar['query_amountofnews'] = df_with_query.count()
 
-    # more then 0 news with the query?
+    # if there are no results show there is nothing
     if globalVar['query_amountofnews'] == 0:
-        globalVar['keywords'] = {}
         globalVar["zero_results"] = True
-        globalVar["wordcloud"] = topic_wordcloud({},
-                                                query, "static/Roboto-Black.ttf")
-
-        # render the index page
+        globalVar["wordcloud"] = topic_wordcloud({}, query, "static/Roboto-Black.ttf")
         return render_template('info.html', globalVar=globalVar)
     
-    # data exploration
-    query_firstnews = str(df_with_q.agg(F.min("timestamp")).collect()[0][0])
+    # process the query results
+    # create key value pairs for each seen keyword
+    result = df_with_query.rdd.flatMap(lambda row: [
+        (key, (
+            value if value is not None else 0,
+            {row["timestamp"]: value if value is not None else 0},
+            (row["sentiment"] or 0.0) * (value if value is not None else 0),
+            {row["source"]: 1},
+            [row["archive"]] if row["archive"] is not None else []
+        )) for key, value in (row["keywords"] or {}).items()
+    ])
+    # reduce the key value pairs to a single value
+    result = result.reduceByKey(lambda a, b: (
+        a[0] + b[0],  # sum counts
+        {ts: a[1].get(ts, 0) + b[1].get(ts, 0) for ts in set(a[1]) | set(b[1])},  # merge timestamp dictionaries
+        a[2] + b[2],  # sum sentiments
+        {source: a[3].get(source, 0) + b[3].get(source, 0) for source in set(a[3]) | set(b[3])},  # merge source dictionaries
+        a[4] + b[4]  # concatenate news lists
+    ))
+    # remove where key is same as standardized keyword
+    result = result.filter(lambda x: standardize_keyword(x[0]) != standardize_keyword(query))
+    # divide sentiment by count to get average sentiment
+    result = result.mapValues(lambda x: (
+        x[0],
+        x[1],
+        x[2] / x[0] if x[0] > 0 else 0,
+        x[3],
+        x[4]
+    ))
+    globalVar["result"] = result
+
+    # get insights and visualizations
+    # info: info
+    query_firstnews = str(df_with_query.agg(F.min("timestamp")).collect()[0][0])
     meses = {
         "01": "janeiro", "02": "fevereiro", "03": "março", "04": "abril",
         "05": "maio", "06": "junho", "07": "julho", "08": "agosto",
         "09": "setembro", "10": "outubro", "11": "novembro", "12": "dezembro"}
     globalVar["query_firstnews"] = f"{meses[query_firstnews[4:]]} de {query_firstnews[:4]}"
-
-    # query already processed?
-    hashed_query = hashlib.sha256(query.encode()).hexdigest()[:10]
-    if os.path.exists(f"cache/{hashed_query}.json"):
-        
-        with open(f"cache/{hashed_query}.json", 'r') as json_file:
-            globalVar['keywords'] = json.load(json_file)
-    
-    else:
-        # process the news if not processed yet
-        result = (
-            df_with_q.rdd
-            .flatMap(lambda row: [
-                (key, (value,
-                    {row["timestamp"]: value},
-                    row["sentiment"]*value,
-                    {row["source"]: 1},
-                    [row["archive"]])) for key, value in row["keywords"].items()
-            ])
-            .reduceByKey(lambda a, b: (
-                a[0] + b[0],  # Sum count values
-                {ts: a[1].get(ts, 0) + b[1].get(ts, 0) for ts in set(a[1]) | set(b[1])},  # Merge timestamp counts
-                a[2] + b[2],  # Sum sentiment values
-                {source: a[3].get(source, 0) + b[3].get(source, 0) for source in set(a[3]) | set(b[3])},  # Merge source counts
-                a[4] + b[4]  # Merge archive lists
-            ))
+    del meses
+    del query_firstnews
+    # info: wordcloud
+    word_counts = word_counts = dict(
+        result.map(lambda x: (x[0], x[1][0]))
             .collect()
-        )
-        # change data schema
-        globalVar['keywords'] = {key: {"count": value[0],
-                        "date": value[1],
-                        "sentiment": value[2]/value[0],
-                        "source": value[3],
-                        "news": value[4]} for key, value in result}
-        globalVar['keywords'] = {k: v for k, v in globalVar['keywords'].items() if v["count"] >= 5}
-
-        # save in cache
-        with open(f"cache/{hashed_query}.json", 'w') as json_file:
-            json.dump(globalVar['keywords'], json_file)
-    
-
-    # create graph src code
-    globalVar["graph_html"] = create_keyword_graph(globalVar['keywords'], 125, query)
-
-    # create pie plot from news sources
-    globalVar["pie_sources"] = pie_newsSources(df_with_q) 
-
-    # create ts plot from news
-    globalVar["ts_news"], globalVar["news_by_month"] = timeseries_news(df_with_q, query)
-
-    # create wordcloud
-    globalVar["wordcloud"] = topic_wordcloud({k: v["count"] for k,v in globalVar['keywords'].items()},
-                                                query, "static/Roboto-Black.ttf")
-    
-    # disable topic relation
+    )
+    globalVar["wordcloud"] = topic_wordcloud(word_counts, query, "static/Roboto-Black.ttf")
+    del word_counts
+    # info: sources pie
+    globalVar["pie_sources"] = pie_newsSources(df_with_query.groupBy('source').count().toPandas()) 
+    # info: time series
+    globalVar["news_by_month"] = (
+        df_with_query
+        .groupBy('timestamp')
+        .agg(F.count('archive').alias('count_of_news'))
+        .toPandas()
+    )
+    globalVar["ts_news"] = timeseries_news(df_with_query, globalVar["news_by_month"], query)
+    # info: topic relation deactivated
     globalVar["topicrelation"] = False
+    # graph: graph
+    top_n = (
+        result.sortBy(lambda x: x[1][0], ascending=False)
+            .take(125)
+    )
+    min_count = min(x[1][0] for x in top_n)
+    globalVar["graph_html"] = create_keyword_graph(dict(top_n), query, min_count)
+    del top_n
+    del min_count
 
-    # render the graph page
+    # render the info template
     return render_template('info.html', globalVar=globalVar)
 
 
@@ -183,35 +181,48 @@ def relacao():
     global globalVar
     if globalVar["search_done"] == False or globalVar["zero_results"] == True:
         return render_template('404.html', globalVar=globalVar)
-    globalVar["topicrelation"] = True
-
+    
     # topic relation requested
     related_topic = request.args.get('entre', '')
     globalVar['related_topic'] = related_topic
-    
-    globalVar["topicrelation_exists"] = related_topic in globalVar['keywords']
+
+    # get the topic relation
+    try:
+        filtered = dict(globalVar["result"].filter(lambda x: x[0] == related_topic).collect())[related_topic]
+        globalVar["topicrelation_exists"] = True
+    except:
+        globalVar["topicrelation_exists"] = False
 
 
-    # return results
+    # either return results
     if globalVar["topicrelation_exists"]:
-        globalVar["count_topicrelation"] = globalVar['keywords'][related_topic]["count"]
-        globalVar["sentiment_topicrelation"] = globalVar['keywords'][related_topic]["sentiment"]
-        globalVar["ts_topicrelation"] = ts_topicrelation(globalVar["news_by_month"], globalVar['keywords'], related_topic, globalVar['query'])
-        globalVar["sources_topicrelation"] = sources_topicrelation(globalVar['keywords'], related_topic)
-        globalVar["news_topicrelation"] = news_topicrelation(globalVar['keywords'], related_topic)
-    
+        # relation count
+        globalVar["count_topicrelation"] = filtered[0]
+        # relation sentiment
+        globalVar["sentiment_topicrelation"] = filtered[2]
+        # relation sources
+        globalVar["sources_topicrelation"] = sources_topicrelation(filtered[3])
+        # relation time series
+        globalVar["ts_topicrelation"] = ts_topicrelation(globalVar["news_by_month"], filtered[1], related_topic, globalVar['query'])
+        # relation news
+        globalVar["news_topicrelation"] = news_topicrelation(filtered[4])
+        
+    # or return a random selection of topics
     else:
-        recomendations_amount = min(5, len(globalVar['keywords']))
-        list_of_recomendations = random.sample(list(globalVar['keywords'].keys()), recomendations_amount)
+        filtered_sample = (
+            globalVar["result"].filter(lambda x: x[1][0] >= 3)
+                .takeSample(False, 5)
+        )
         recomendation_output = ""
-        for possible_topic in list_of_recomendations:
-            recomendation_output += f"<a href='/relacao?entre={possible_topic}'>{possible_topic}</a>, "
+        for x in filtered_sample:
+            recomendation_output += f"<a href='/relacao?entre={x[0]}'>{x[0]}</a>, "
         globalVar["recomendations_topicrelation"] = recomendation_output[:-2]
 
-    
+    globalVar["topicrelation"] = True
     return render_template('info.html', globalVar=globalVar, scroll_to_relation=True)
     
-    
+
 
 if __name__ == '__main__':
+
     socketio.run(app, debug=True)

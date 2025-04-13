@@ -14,9 +14,7 @@ from io import BytesIO
 
 #%%
 
-def pie_newsSources(df_with_query):
-    # Group by the column and count the values
-    value_counts_df = df_with_query.groupBy('source').count().toPandas()
+def pie_newsSources(value_counts_df):
 
     # Extract labels and values directly
     labels = value_counts_df['source']
@@ -46,20 +44,13 @@ def pie_newsSources(df_with_query):
 
 #%%
 
-def timeseries_news(df_with_query, query):
+def timeseries_news(df_with_query, news_by_month, query):
     traducao_meses = {
         "January": "janeiro", "February": "fevereiro", "March": "março",
         "April": "abril", "May": "maio", "June": "junho",
         "July": "julho", "August": "agosto", "September": "setembro",
         "October": "outubro", "November": "novembro", "December": "dezembro"
     }
-
-    news_by_month = (
-        df_with_query
-        .groupBy('timestamp')
-        .agg(F.count('archive').alias('count_of_news'))
-        .toPandas()
-    )
 
     keywords_by_month = (
         df_with_query
@@ -136,7 +127,7 @@ def timeseries_news(df_with_query, query):
 
     fig.update_xaxes(tickformat="%Y-%m")
 
-    return pio.to_html(fig, full_html=False, config={'displayModeBar': False}), news_by_month
+    return pio.to_html(fig, full_html=False, config={'displayModeBar': False})
 
 #%%
 

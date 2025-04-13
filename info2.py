@@ -5,7 +5,7 @@ import plotly.io as pio
 
 # %%
 
-def ts_topicrelation(news_by_month, keywords, search_topic, query):
+def ts_topicrelation(news_by_month, tstampsdict, search_topic, query):
 
     #traducao_meses = {
     #    "January": "Janeiro", "February": "Fevereiro", "March": "Março",
@@ -26,7 +26,7 @@ def ts_topicrelation(news_by_month, keywords, search_topic, query):
     news_by_monthc["timestamp"] = pd.to_datetime(news_by_monthc["timestamp"].astype(str), format='%Y%m')
 
     # number of mentions of the specific keyword
-    specific_keyword = pd.DataFrame(list(keywords[search_topic]["date"].items()), columns=["date", "count_specific_keyword"])
+    specific_keyword = pd.DataFrame(list(tstampsdict.items()), columns=["date", "count_specific_keyword"])
     specific_keyword["date"] = pd.to_datetime(specific_keyword["date"], format="%Y%m")
 
     # merge the two dataframes
@@ -103,9 +103,7 @@ def ts_topicrelation(news_by_month, keywords, search_topic, query):
 
 # %%
 
-def sources_topicrelation(keywords, search_topic):
-
-    sources = keywords[search_topic]['source']
+def sources_topicrelation(sources):
 
     labels = list(sources.keys())
     values = list(sources.values())
@@ -136,7 +134,7 @@ def sources_topicrelation(keywords, search_topic):
 
 # %%
 
-def news_topicrelation(keywords, search_topic):
+def news_topicrelation(listofnews):
 
     company_logos = [
         'record.png',
@@ -163,7 +161,7 @@ def news_topicrelation(keywords, search_topic):
     divs = {}
     titles = set()
 
-    for url in keywords[search_topic]["news"]:
+    for url in listofnews:
         link_content = url.split("/")
 
         # set title and verify if it is repeated
