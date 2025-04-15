@@ -126,9 +126,10 @@
                         <div class="col-lg-6 text-center text-lg-start">
                             <h1 class="text-white mb-4 animated zoomIn">A Lupa que Revela Conexões</h1>
                             <p class="text-white pb-3 animated zoomIn" style="text-align: justify;">A Lupa Digital permite explorar e analisar notícias arquivadas ao longo da era digital desde 1998 até à atualidade revelando conexões e padrões entre cerca de 1 500 000 tópicos, entidades e eventos.</p>
-                            <div class="position-relative w-100 mt-3 animated zoomIn">
+                            <div class="position-relative w-100 mt-3 animated zoomIn" style="z-index: 10;">
                                 <input id="searchInput" class="form-control border-0 rounded-pill w-100 ps-4 pe-5" type="text" placeholder="Procure sobre um tópico..." style="height: 48px;">
                                 <button id="searchInput-buttom" onclick="redirectToSearch()" type="submit" class="btn shadow-none position-absolute top-0 end-0 mt-1 me-2"><i class="fa fa-search text-primary fs-4"></i></button>
+                                <ul id="suggestionsList" class="hidden w-100" style="color: rgb(110,117,124);"></ul>
                             </div>
                             <p class="text-white pb-3 animated zoomIn mt-3">
                                 Baseado em dados do
@@ -142,17 +143,83 @@
                         <div id="normalState" class="col-lg-6 text-center text-lg-start">
                             <img class="img-fluid animated zoomIn" src="{{ url_for('static', filename='img/hero.png') }}" alt="Lupa Digital">
                         </div>
-                        <!--
-                        <div id="loadingState" class="col-lg-6 text-center text-lg-start" style="display: none;">
-                            <img class="img-fluid" src="{{ url_for('static', filename='img/feature_01.gif') }}" alt="Lupa Digital">
-                            <p class="mt-2">Digite um tópico e pressione Enter LOADGIN</p>
-                            <p class="mt-2">Procurando tópico...</p>                           
-                        </div>
-                        -->
                     </div>
                 </div>
             </div>
+            <style>
+                #suggestionsList {
+                  position: absolute;
+                  background: white;
+                  border-top: 1px solid #ccc;
+                  list-style: none;
+                  border-radius: 0 0 8px 8px;
+                  padding: 0px;
+                  overflow-y: auto;
+                }
+                #suggestionsList li {
+                  padding-top: .5em;
+                  padding-bottom: .5em;
+                  padding-left: 1.5em;
+                  cursor: pointer;
+                }
+                #suggestionsList li:hover {
+                  background-color: #eee;
+                }
+                .hidden {
+                  display: none;
+                }
+            </style>
             <script>
+                // Topic search suggestions
+                const suggestions = [
+                    "Mudanças Climáticas",
+                    "Eleições",
+                    "Galp",
+                    "Tecnologia",
+                    "Educação"
+                ];
+                const input = document.getElementById('searchInput');
+                const list = document.getElementById('suggestionsList');
+                // Hide the list initially
+                input.addEventListener('focus', () => {
+                    list.innerHTML = suggestions.map(item => `<li>${item}</li>`).join('');
+                    list.classList.remove('hidden');
+                    input.classList.remove('rounded-pill');
+                    input.style.borderRadius = '1.5em 1.5em 0 0';
+                });
+                // Hide suggestions when input is empty
+                input.addEventListener('input', () => {
+                    const value = input.value.toLowerCase();
+                    if (value === "") {
+                        list.innerHTML = suggestions.map(item => `<li>${item}</li>`).join('');
+                        list.classList.remove('hidden');
+                        input.classList.remove('rounded-pill');
+                        input.style.borderRadius = '1.5em 1.5em 0 0';
+                    } else {
+                        list.classList.add('hidden');
+                        input.classList.add('rounded-pill');
+                    }
+                });
+                // Shows suggestion on input focus
+                list.addEventListener('click', (e) => {
+                    if (e.target.tagName === 'LI') {
+                        input.value = e.target.textContent;
+                        list.classList.add('hidden');
+                        input.classList.add('rounded-pill');
+                        // Redirect to search with the selected suggestion
+                        redirectToSearch();
+                    }
+                });
+                // Hide suggestions when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!input.contains(e.target) && !list.contains(e.target)) {
+                        list.classList.add('hidden');
+                        input.classList.add('rounded-pill');
+                    }
+                });
+            </script>
+            <script>
+                // Search input redirection
                 document.getElementById("searchInput").addEventListener("keydown", function(event) {
                     if (event.key === "Enter") {
                         event.preventDefault();
