@@ -248,6 +248,14 @@
                         alert("Por favor, digite um tópico.");
                     }
                 }
+
+                // Handle back navigation: reset the page state
+                window.addEventListener("pageshow", function(event) {
+                    if (event.persisted || performance.getEntriesByType("navigation")[0].type === "back_forward") {
+                        // Force a hard reload to ensure page is fresh
+                        window.location.reload(true); // true is legacy, but still respected by some browsers
+                    }
+                });
             </script>
         </div>
         <!-- Navbar & Hero End -->
@@ -273,15 +281,6 @@
                                 <h6 class="mb-0"><i class="fa fa-check text-primary me-2"></i>Visualizações Interativas</h6>
                             </div>
                         </div>
-                        <!--
-                        <div class="d-flex align-items-center mt-4">
-                            <a class="btn btn-primary rounded-pill px-4 me-3" href="">Read More</a>
-                            <a class="btn btn-outline-primary btn-square me-3" href=""><i class="fab fa-facebook-f"></i></a>
-                            <a class="btn btn-outline-primary btn-square me-3" href=""><i class="fab fa-twitter"></i></a>
-                            <a class="btn btn-outline-primary btn-square me-3" href=""><i class="fab fa-instagram"></i></a>
-                            <a class="btn btn-outline-primary btn-square" href=""><i class="fab fa-linkedin-in"></i></a>
-                        </div>
-                        -->
                     </div>
                     <div class="col-lg-6">
                         <img class="img-fluid wow zoomIn" data-wow-delay="0.5s" src="{{ url_for('static', filename='img/about.png') }}">
