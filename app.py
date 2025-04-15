@@ -185,10 +185,12 @@ def relacao():
     # topic relation requested
     related_topic = request.args.get('entre', '')
     globalVar['related_topic'] = related_topic
+    standardize_related_topic = standardize_keyword(related_topic)
 
     # get the topic relation
     try:
-        filtered = dict(globalVar["result"].filter(lambda x: x[0] == related_topic).collect())[related_topic]
+        filtered = dict(globalVar["result"].filter(lambda x: standardize_keyword(x[0]) == standardize_related_topic).collect())
+        filtered =  next(iter(filtered.values()))
         globalVar["topicrelation_exists"] = True
     except:
         globalVar["topicrelation_exists"] = False
