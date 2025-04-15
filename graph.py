@@ -436,7 +436,7 @@ def create_keyword_graph(data, query, min_count):
     node_x, node_y = [0], [0]
     node_text, node_form = [f"<b>{query}</b>"], ["square"]
     node_size, node_color= [0], ["rgb(217, 238, 252)"]
-    node_hovertext, custom_data = ["Explora os tópicos ao clicares neles!"], [""]
+    node_hovertext, custom_data = ["Explore os tópicos ao clicar neles."], [""]
     
     # sentiment filtering deleted
     pos = get_node_positions(data)

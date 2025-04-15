@@ -161,7 +161,7 @@ def news_topicrelation(listofnews):
     divs = {}
     titles = set()
 
-    for url in listofnews:
+    for url in listofnews[:30]:
         link_content = url.split("/")
 
         # set title and verify if it is repeated
