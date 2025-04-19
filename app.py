@@ -1,6 +1,6 @@
 # Flask
 from flask import Flask, render_template, request
-from flask_socketio import SocketIO
+#from flask_socketio import SocketIO
 
 # Spark
 from pyspark.sql import SparkSession
@@ -47,17 +47,20 @@ globalVar = {
             "total_amount_of_news": 349519, #df.count()
             "first_news": 1998, #df.select("timestamp").orderBy("timestamp").first()[0])
             "last_news": 2024, #df.select("timestamp").orderBy(df.timestamp.desc()).first()[0]
+            "graph_html": (None, None)
             }
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
 app = Flask(__name__)
-socketio = SocketIO(app)
+#socketio = SocketIO(app)
+
 
 @app.route('/')
 def home():
     return render_template('index.html', globalVar=globalVar)
+
 
 @app.route('/sobre')
 def sobre():
@@ -67,29 +70,54 @@ def sobre():
     
     return render_template('info.html', globalVar=globalVar)
 
+
 @app.route('/grafo')
 def grafo():
     global globalVar
     if globalVar["search_done"] == False or globalVar["zero_results"] == True:
         return render_template('404.html', globalVar=globalVar)
+    
+    # if graph was already computed, ok
+    if globalVar["graph_html"][0] == globalVar["query"]:
+        return render_template('graph.html', globalVar=globalVar)
+    
+    # if graph has yet to be computed, do it
+    if globalVar["graph_html"][0] != globalVar["query"]:
+        top_n = (
+            globalVar["result"].sortBy(lambda x: x[1][0], ascending=False)
+                .take(125)
+        )
+        min_count = min(x[1][0] for x in top_n)
+        globalVar["graph_html"] = (globalVar["query"],
+                                   create_keyword_graph(dict(top_n), globalVar["query"], min_count))
+        return render_template('graph.html', globalVar=globalVar)
 
-    return render_template('graph.html', globalVar=globalVar)
 
 @app.route('/pesquisa', methods=['GET'])
 def pesquisa():
     global globalVar
 
-    # update 
+    # update
     globalVar["search_done"] = True
     globalVar["zero_results"] = False
     globalVar["topicrelation"] = False
+
+    # free up memory
+    globalVar["graph_html"] = (None, None)
+    globalVar["count_topicrelation"] = None
+    globalVar["sentiment_topicrelation"] = None
+    globalVar["sources_topicrelation"] = None
+    globalVar["ts_topicrelation"] = None
+    globalVar["news_topicrelation"] = None
 
     # query requested
     query = request.args.get('topico', '')
     globalVar['query'] = query
 
     # data filtering
-    df_with_query = df.filter(F.array_contains(df["significant_keywords"], standardize_keyword(query)))
+    df_with_query = df \
+                    .filter(F.array_contains(df["significant_keywords"], standardize_keyword(query))) \
+                    .drop("significant_keywords")
     globalVar['query_amountofnews'] = df_with_query.count()
 
     # if there are no results show there is nothing
@@ -128,6 +156,7 @@ def pesquisa():
         x[4]
     ))
     globalVar["result"] = result
+    del result
 
     # get insights and visualizations
     # info: info
@@ -141,7 +170,7 @@ def pesquisa():
     del query_firstnews
     # info: wordcloud
     word_counts = word_counts = dict(
-        result.map(lambda x: (x[0], x[1][0]))
+        globalVar["result"].map(lambda x: (x[0], x[1][0]))
             .collect()
     )
     globalVar["wordcloud"] = topic_wordcloud(word_counts, query, "static/Roboto-Black.ttf")
@@ -158,15 +187,6 @@ def pesquisa():
     globalVar["ts_news"] = timeseries_news(df_with_query, globalVar["news_by_month"], query)
     # info: topic relation deactivated
     globalVar["topicrelation"] = False
-    # graph: graph
-    top_n = (
-        result.sortBy(lambda x: x[1][0], ascending=False)
-            .take(125)
-    )
-    min_count = min(x[1][0] for x in top_n)
-    globalVar["graph_html"] = create_keyword_graph(dict(top_n), query, min_count)
-    del top_n
-    del min_count
 
     # render the info template
     return render_template('info.html', globalVar=globalVar)
@@ -223,4 +243,5 @@ def relacao():
 
 if __name__ == '__main__':
 
-    socketio.run(app, debug=True)
+    #socketio.run(app, debug=True)
+    app.run(debug=True)

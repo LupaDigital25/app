@@ -54,7 +54,7 @@ class Node:
     
     def _news_websites(self):
         websites_data = ""
-        for url in self.news:
+        for url in self.news[:100]:
             website = url.split("/")
             websites_data += f"<p><a href='{url}' target='_blank'>{website[5][:4]+'/'+website[5][4:6]+' - '+ '/'.join(website[6:])}</a></p>"
         return websites_data
