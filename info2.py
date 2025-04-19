@@ -98,7 +98,6 @@ def ts_topicrelation(news_by_month, tstampsdict, search_topic, query):
 
     fig.update_xaxes(tickformat="%Y-%m")
 
-    #fig.show(config={'displayModeBar': False})
     return pio.to_html(fig, full_html=False, config={'displayModeBar': False})
 
 # %%
