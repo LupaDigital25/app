@@ -159,8 +159,7 @@ def pesquisa():
     # get insights and visualizations
     # info: wordcloud
     word_counts = word_counts = dict(
-        globalVar["result"].map(lambda x: (x[0], x[1][0]))
-            .collect()
+        globalVar["result"].map(lambda x: (x[0], x[1][0])).take(5000)
     )
     globalVar["wordcloud"] = topic_wordcloud(word_counts, query, "static/Roboto-Black.ttf")
     del word_counts
