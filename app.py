@@ -1,6 +1,5 @@
 # Flask
 from flask import Flask, render_template, request
-#from flask_socketio import SocketIO
 
 # Spark
 from pyspark.sql import SparkSession
@@ -30,7 +29,6 @@ def standardize_keyword(texto):
 
 if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
 
-    # Initialize SparkSession
     spark = SparkSession.builder \
         .appName("News App") \
         .config("spark.ui.enabled", "false") \
@@ -54,7 +52,6 @@ globalVar = {
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
 app = Flask(__name__)
-#socketio = SocketIO(app)
 
 
 @app.route('/')
@@ -233,6 +230,4 @@ def relacao():
 
 
 if __name__ == '__main__':
-
-    #socketio.run(app, debug=True)
     app.run(debug=True)

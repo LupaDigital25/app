@@ -3,25 +3,10 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.io as pio
 
-# %%
 
 def ts_topicrelation(news_by_month, tstampsdict, search_topic, query):
 
-    #traducao_meses = {
-    #    "January": "Janeiro", "February": "Fevereiro", "March": "Março",
-    #    "April": "Abril", "May": "Maio", "June": "Junho",
-    #    "July": "Julho", "August": "Agosto", "September": "Setembro",
-    #    "October": "Outubro", "November": "Novembro", "December": "Dezembro"
-    #}
-
-    # number of news per month
-    #news_by_month = (
-    #    df_with_query
-    #    .groupBy('timestamp')
-    #    .agg(F.count('archive').alias('count_of_news'))
-    #    .toPandas()
-    #)
-    
+    # create a copy of the news_by_month dataframe
     news_by_monthc = news_by_month.copy()
     news_by_monthc["timestamp"] = pd.to_datetime(news_by_monthc["timestamp"].astype(str), format='%Y%m')
 
@@ -39,8 +24,6 @@ def ts_topicrelation(news_by_month, tstampsdict, search_topic, query):
     news_history = news_history.set_index("timestamp").reindex(full_range).fillna(0).reset_index()
     news_history = news_history.rename(columns={"index": "timestamp"})
     news_history = news_history.sort_values(by="timestamp")
-
-    #news_history["data_formatada"] = news_history["timestamp"].dt.strftime("%B de %Y").replace(traducao_meses, regex=True)
 
     # create the plot
     fig = go.Figure()
@@ -100,13 +83,14 @@ def ts_topicrelation(news_by_month, tstampsdict, search_topic, query):
 
     return pio.to_html(fig, full_html=False, config={'displayModeBar': False})
 
-# %%
 
 def sources_topicrelation(sources):
 
+    # get the sources and their counts
     labels = list(sources.keys())
     values = list(sources.values())
 
+    # create the pie chart
     fig = go.Figure(data=[go.Pie(
         labels=labels,
         values=values,
@@ -131,7 +115,6 @@ def sources_topicrelation(sources):
 
     return fig.to_html(full_html=True, config={'displayModeBar': False})
 
-# %%
 
 def news_topicrelation(listofnews):
 
@@ -160,6 +143,7 @@ def news_topicrelation(listofnews):
     divs = {}
     titles = set()
 
+    # iterate through the list of news (only the first 30)
     for url in listofnews[:30]:
         link_content = url.split("/")
 
@@ -173,7 +157,6 @@ def news_topicrelation(listofnews):
         elif title not in titles:
             title = link_content[-1] if link_content[-1] != "" else link_content[-2]
             titles.add(title)
-            #title = "Sem título disponível..."
         else:
             continue
 
@@ -228,7 +211,6 @@ def news_topicrelation(listofnews):
 
     return divs
 
-# %%
 
 if __name__ == "__main__":
     print("abracadabra")

@@ -215,9 +215,6 @@ def create_graph(node_x, node_y,
         margin=dict(l=0, r=0, t=0, b=0),
         plot_bgcolor="rgb(217, 238, 252)",
         paper_bgcolor="rgb(217, 238, 252)",
-        #font=dict(
-        #    family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif",
-        #)
     )
 
     # generate the base html
@@ -463,7 +460,7 @@ def create_keyword_graph(data, query, min_count):
 
     return html_code.replace("</body>", additional_html + "</body>")
 
+
 # === TESTING ===
 if __name__ == "__main__":
-
     print("abracadabra")

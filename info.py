@@ -12,16 +12,14 @@ from PIL import Image, ImageDraw, ImageFont
 import base64
 from io import BytesIO
 
-#import matplotlib.pyplot as plt
-
-#%%
 
 def pie_newsSources(value_counts_df):
 
-    # Extract labels and values directly
+    # extract labels and values
     labels = value_counts_df['source'].tolist()
     values = value_counts_df['count'].tolist()
 
+    # create pie chart
     fig = go.Figure(data=[go.Pie(
         labels=labels,
         values=values,
@@ -44,7 +42,6 @@ def pie_newsSources(value_counts_df):
 
     return pio.to_html(fig, full_html=False, config={'displayModeBar': False})
 
-#%%
 
 def timeseries_news(df_with_query, news_by_month, query):
     traducao_meses = {
@@ -54,6 +51,7 @@ def timeseries_news(df_with_query, news_by_month, query):
         "October": "outubro", "November": "novembro", "December": "dezembro"
     }
 
+    # get the top 5 keywords for each month
     keywords_by_month = (
         df_with_query
         .select('*', F.explode('keywords'))
@@ -67,9 +65,11 @@ def timeseries_news(df_with_query, news_by_month, query):
         .toPandas()
     )
 
+    # get the count of news for each month
     news_history = news_by_month.merge(keywords_by_month, on="timestamp", how="inner")
     news_history["timestamp"] = pd.to_datetime(news_history["timestamp"].astype(str), format='%Y%m')
 
+    # fill in missing months with 0
     min_date = news_history["timestamp"].min()
     max_date = news_history["timestamp"].max()
     full_range = pd.date_range(start=min_date, end=max_date, freq='MS')
@@ -78,14 +78,13 @@ def timeseries_news(df_with_query, news_by_month, query):
     news_history = news_history.rename(columns={"index": "timestamp"})
     news_history = news_history.sort_values(by="timestamp")
 
+    # convert to datetime and format
     news_history["data_formatada"] = news_history["timestamp"].dt.strftime("%B de %Y").replace(traducao_meses, regex=True)
-    #news_history["top5_keywords"] = news_history["top5_keywords"].apply(
-    #    lambda words: "-" if words == 0 else "<br>".join([f"{i+1}. {word}" for i, word in enumerate(words)])
-    #)
     news_history["top5_keywords"] = news_history["top5_keywords"].map(
         lambda words: "-" if words == 0 else "<br>".join([f"{i+1}. {word}" for i, word in enumerate(words)])
     )
 
+    # create the time series plot
     fig = px.line(
         news_history,
         x="timestamp",
@@ -134,11 +133,11 @@ def timeseries_news(df_with_query, news_by_month, query):
 
     return pio.to_html(fig, full_html=False, config={'displayModeBar': False}), news_history.loc[0, "data_formatada"]
 
-#%%
 
 def topic_wordcloud(word_counts, TEXT, FONT_PATH,
                     MAX_FONT_SIZE=500,
                     IMAGE_SIZE=(2250, 400)):
+    # validate word_counts
     if word_counts == {}:
         word_counts = {"abracadabra": 1}
         wcloud_colour = "rgb(34, 36, 170)"
@@ -203,7 +202,6 @@ def topic_wordcloud(word_counts, TEXT, FONT_PATH,
 
     return base64_img
 
-# %%
 
 if __name__ == '__main__':
     print("abracadabra")
