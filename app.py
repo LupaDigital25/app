@@ -159,15 +159,6 @@ def pesquisa():
     del result
 
     # get insights and visualizations
-    # info: info
-    query_firstnews = str(df_with_query.agg(F.min("timestamp")).collect()[0][0])
-    meses = {
-        "01": "janeiro", "02": "fevereiro", "03": "março", "04": "abril",
-        "05": "maio", "06": "junho", "07": "julho", "08": "agosto",
-        "09": "setembro", "10": "outubro", "11": "novembro", "12": "dezembro"}
-    globalVar["query_firstnews"] = f"{meses[query_firstnews[4:]]} de {query_firstnews[:4]}"
-    del meses
-    del query_firstnews
     # info: wordcloud
     word_counts = word_counts = dict(
         globalVar["result"].map(lambda x: (x[0], x[1][0]))
@@ -184,7 +175,7 @@ def pesquisa():
         .agg(F.count('archive').alias('count_of_news'))
         .toPandas()
     )
-    globalVar["ts_news"] = timeseries_news(df_with_query, globalVar["news_by_month"], query)
+    globalVar["ts_news"], globalVar["query_firstnews"] = timeseries_news(df_with_query, globalVar["news_by_month"], query)
     # info: topic relation deactivated
     globalVar["topicrelation"] = False
 

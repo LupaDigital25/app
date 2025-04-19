@@ -1,24 +1,26 @@
-from pyspark.sql import functions as F
-from pyspark.sql.window import Window
-from pyspark.sql.functions import collect_list
-import numpy as np
 import pandas as pd
+from pyspark.sql.window import Window
+from pyspark.sql import functions as F
+
 import plotly.io as pio
 import plotly.express as px
 import plotly.graph_objects as go
-import matplotlib.pyplot as plt
+
 from wordcloud import WordCloud
+import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 import base64
 from io import BytesIO
+
+#import matplotlib.pyplot as plt
 
 #%%
 
 def pie_newsSources(value_counts_df):
 
     # Extract labels and values directly
-    labels = value_counts_df['source']
-    values = value_counts_df['count']
+    labels = value_counts_df['source'].tolist()
+    values = value_counts_df['count'].tolist()
 
     fig = go.Figure(data=[go.Pie(
         labels=labels,
@@ -61,7 +63,7 @@ def timeseries_news(df_with_query, news_by_month, query):
         .withColumn("rank", F.row_number().over(Window.partitionBy("timestamp").orderBy(F.desc("key_mentions"))))
         .filter(F.col("rank") <= 5)
         .groupBy("timestamp")
-        .agg(collect_list("key").alias("top5_keywords"))
+        .agg(F.collect_list("key").alias("top5_keywords"))
         .toPandas()
     )
 
@@ -77,7 +79,10 @@ def timeseries_news(df_with_query, news_by_month, query):
     news_history = news_history.sort_values(by="timestamp")
 
     news_history["data_formatada"] = news_history["timestamp"].dt.strftime("%B de %Y").replace(traducao_meses, regex=True)
-    news_history["top5_keywords"] = news_history["top5_keywords"].apply(
+    #news_history["top5_keywords"] = news_history["top5_keywords"].apply(
+    #    lambda words: "-" if words == 0 else "<br>".join([f"{i+1}. {word}" for i, word in enumerate(words)])
+    #)
+    news_history["top5_keywords"] = news_history["top5_keywords"].map(
         lambda words: "-" if words == 0 else "<br>".join([f"{i+1}. {word}" for i, word in enumerate(words)])
     )
 
@@ -127,7 +132,7 @@ def timeseries_news(df_with_query, news_by_month, query):
 
     fig.update_xaxes(tickformat="%Y-%m")
 
-    return pio.to_html(fig, full_html=False, config={'displayModeBar': False})
+    return pio.to_html(fig, full_html=False, config={'displayModeBar': False}), news_history.loc[0, "data_formatada"]
 
 #%%
 
