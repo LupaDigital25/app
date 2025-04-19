@@ -113,7 +113,7 @@
             </div>
         </div>
         <!-- Spinner End -->
-         <!-- Loading Search Start -->
+        <!-- Loading Search Start -->
         <div id="loadingIndicator" style="display: none;" class="loading-overlay">
             <div class="text-center">
                 <div class="spinner-border text-white" role="status">
@@ -122,7 +122,17 @@
                 <p class="mt-2 text-white">A analisar {{ globalVar['total_amount_of_news'] }} notícias...</p>
             </div>
         </div>        
-         <!-- Loading Search End -->
+        <!-- Loading Search End -->
+        <!-- Loading Graph Start -->
+        <div id="loadingIndicatorGraph" style="display: none;" class="loading-overlay">
+            <div class="text-center">
+                <div class="spinner-border text-white" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2 text-white">A carregar o grafo...</p>
+            </div>
+        </div>        
+         <!-- Loading Graph End -->
 
 
         <!-- Navbar & Hero Start -->
@@ -141,7 +151,7 @@
                         {% if globalVar['zero_results'] %}
                             <a href="javascript:void(0);" class="nav-item nav-link" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Nada por aqui..." data-bs-placement="bottom">Grafo</a>
                         {% else %}
-                            <a href="/grafo" class="nav-item nav-link">Grafo</a>
+                            <a href="javascript:void(0)" onclick="openGraph()" class="nav-item nav-link">Grafo</a>
                         {% endif %}
                     </div>
                     <div class="d-none d-lg-flex">
@@ -162,6 +172,7 @@
                   });
                 });
             </script>
+
 
             <div class="container-xxl py-5 bg-primary hero-header mb-5">
                 <div class="container my-5 py-5 px-lg-5">
@@ -453,7 +464,7 @@
                             </div>
                             <h5 class="mb-12">Aprofunde as Conexões</h5>
                             <p>Já explorou as principais fontes de informação e analisou como as notícias evoluíram ao longo do tempo sobre este tópico. Se não quiser verificar a presença de mais relações à sua escolha, dê o próximo passo: visualize o grafo de relações e descubra quais são os tópicos que mais se relacionam com a sua pesquisa.</p>
-                            <a class="btn px-3 mt-auto mx-auto" href="/grafo">Ver Grafo</a>
+                            <a class="btn px-3 mt-auto mx-auto" href="javascript:void(0)" onclick="openGraph()">Ver Grafo</a>
                         </div>
                     </div>
                 </div>
@@ -474,7 +485,7 @@
                             <div class="footer-menu">
                                 <a href="/">Início</a>
                                 <a href="#">Sobre</a>
-                                <a href="/grafo">Grafo</a>
+                                <a href="javascript:void(0)" onclick="openGraph()">Grafo</a>
                             </div>
                         </div>
                     </div>
@@ -531,6 +542,30 @@
             $(".owl-prev").text("<");
             $(".owl-next").text(">");
         });
+    </script>
+    
+    <!-- Loading the Graph Page Script-->
+    <script>
+        function openGraph() {
+            {% if globalVar['query'] != globalVar['graph_html'][0] %}
+            
+            // Show the loading indicator
+            document.getElementById("loadingIndicatorGraph").style.display = "flex";
+
+            // Disable scrolling
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.body.style.overflow = 'hidden';
+
+            // Delay to allow the loader to be visible before redirect
+            setTimeout(function() {
+                window.location.href = `/grafo`;
+            }, 500);
+            {% else %}
+            setTimeout(function() {
+                window.location.href = `/grafo`;
+            }, 0);
+            {% endif %}
+        }
     </script>
     
 </body>

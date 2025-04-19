@@ -75,7 +75,17 @@
                 <p class="mt-2 text-white">A analisar {{ globalVar['total_amount_of_news'] }} notícias...</p>
             </div>
         </div>        
-         <!-- Loading Search End -->
+        <!-- Loading Search End -->
+        <!-- Loading Graph Start -->
+        <div id="loadingIndicatorGraph" style="display: none;" class="loading-overlay">
+            <div class="text-center">
+                <div class="spinner-border text-white" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2 text-white">A carregar o grafo...</p>
+            </div>
+        </div>        
+        <!-- Loading Graph End -->
 
 
         <!-- Navbar & Hero Start -->
@@ -98,7 +108,7 @@
                             <a href="#" class="nav-item nav-link" style="cursor: not-allowed;" data-bs-toggle="tooltip" title="Nada por aqui..." data-bs-placement="bottom">Grafo</a>
                         {% else %}
                             <a href="/sobre" class="nav-item nav-link">Sobre</a>
-                            <a href="/grafo" class="nav-item nav-link">Grafo</a>
+                            <a href="javascript:void(0)" onclick="openGraph()" class="nav-item nav-link">Grafo</a>
                         {% endif %}
                     </div>
                     <div class="d-none d-lg-flex">
@@ -540,7 +550,7 @@
                             <div class="footer-menu">
                                 <a href="#">Início</a>
                                 <a href="/sobre">Sobre</a>
-                                <a href="/grafo">Grafo</a>
+                                <a href="javascript:void(0)" onclick="openGraph()">Grafo</a>
                             </div>
                         </div>
                     </div>
@@ -566,6 +576,30 @@
 
     <!-- Template Javascript -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    <!-- Loading the Graph Page Script-->
+    <script>
+        function openGraph() {
+            {% if globalVar['query'] != globalVar['graph_html'][0] and not globalVar['zero_results'] %}
+            
+            // Show the loading indicator
+            document.getElementById("loadingIndicatorGraph").style.display = "flex";
+
+            // Disable scrolling
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.body.style.overflow = 'hidden';
+
+            // Delay to allow the loader to be visible before redirect
+            setTimeout(function() {
+                window.location.href = `/grafo`;
+            }, 500);
+            {% else %}
+            setTimeout(function() {
+                window.location.href = `/grafo`;
+            }, 0);
+            {% endif %}
+        }
+    </script>
 
 </body>
 

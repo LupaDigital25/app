@@ -45,7 +45,7 @@ globalVar = {
             "total_amount_of_news": 349519, #df.count()
             "first_news": 1998, #df.select("timestamp").orderBy("timestamp").first()[0])
             "last_news": 2024, #df.select("timestamp").orderBy(df.timestamp.desc()).first()[0]
-            "graph_html": (None, None)
+            "graph_html": (None, None),
             }
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
@@ -121,6 +121,7 @@ def pesquisa():
     if globalVar['query_amountofnews'] == 0:
         globalVar["zero_results"] = True
         globalVar["wordcloud"] = topic_wordcloud({}, query, "static/Roboto-Black.ttf")
+        globalVar["graph_html"] = (query, None)
         return render_template('info.html', globalVar=globalVar)
     
     # process the query results
