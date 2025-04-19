@@ -8,11 +8,7 @@ from pyspark.sql import functions as F
 from pyspark.sql.types import *
 
 # Others
-import time
 import os
-import hashlib
-import json
-import random
 import re
 import unicodedata
 
